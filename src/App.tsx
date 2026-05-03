@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Boards from "./routes/boards/Boards";
-import Details from "./routes/details/Details";
+
 import Profile from "./routes/profile/Profile";
 import ErrorPage from "./routes/errorPage";
 import Root from "./routes/root/Root";
+import BoardList from "./routes/boardList/BoardList";
+import SingleBoard from "./routes/singleBoard/SingleBoard";
 
 function App() {
   const router = createBrowserRouter(
@@ -14,20 +15,15 @@ function App() {
         errorElement: <ErrorPage />,
         children: [
           {
-            path: "boards", // Boards als Child von Root
-            children: [
-              {
-                index: true,
-                element: <Boards />,
-              },
-              {
-                path: "details/:id", // Details als Child von Boards
-                element: <Details />,
-              },
-            ],
+            index: true,
+            element: <BoardList />,
           },
           {
-            path: "profile", // Profile als Child von Root
+            path: "boardlist/singleboard/:id",
+            element: <SingleBoard />,
+          },
+          {
+            path: "profile",
             element: <Profile />,
           },
         ],
@@ -37,6 +33,8 @@ function App() {
       basename: "/kanbanboard",
     },
   );
-  return <RouterProvider router={router}></RouterProvider>;
+
+  return <RouterProvider router={router} />;
 }
+
 export default App;
