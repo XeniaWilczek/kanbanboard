@@ -3,7 +3,8 @@ import Profile from "./routes/profile/Profile";
 import ErrorPage from "./routes/errorPage";
 import Root from "./routes/root/Root";
 import BoardList from "./routes/boardList/BoardList";
-import BoardCard from "./routes/BoardCard/BoardCard";
+import BoardCard from "./components/BoardCard/BoardCard";
+import DetailView from "./routes/DetailView/DetailView";
 
 function App() {
   const router = createBrowserRouter(
@@ -19,7 +20,7 @@ function App() {
           },
           {
             path: "boardlist/:id",
-            element: <BoardCard />,
+            element: <DetailView />,
           },
           {
             path: "profile",

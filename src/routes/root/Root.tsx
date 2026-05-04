@@ -4,7 +4,7 @@ export default function Root() {
   return (
     <>
       <div>
-        Root: oberer Balken, der den Link zu Boards und den Link zu Profile
+        Root: oberer Balken, der den Link zu BoardList und den Link zu Profile
         enthält
       </div>
 
