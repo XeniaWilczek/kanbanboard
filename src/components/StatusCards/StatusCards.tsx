@@ -11,7 +11,7 @@ import TaskCard from "../TaskCard/TaskCard";
 
 export default function StatusCards() {
   return (
-    <div className="details-list w-full h-64 grid grid-cols-3 gap-4 bg-amber-600">
+    <div className="details-list w-full h-64 grid grid-cols-3 gap-4">
       <Card className="border border-black rounded-md h-64">
         <CardHeader className="border-b border-black">
           <CardTitle className="w-full flex justify-between items-center">

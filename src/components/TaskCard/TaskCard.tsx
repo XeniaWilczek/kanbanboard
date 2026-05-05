@@ -15,9 +15,14 @@ export default function TaskCard() {
         <CardTitle className="w-full flex justify-between items-center">
           <div className="flex justify-start items-center gap-1">
             <CardDescription>
-              <GripVertical size={16}></GripVertical>
+              <GripVertical
+                size={16}
+                className="hover:cursor-pointer"
+              ></GripVertical>
             </CardDescription>
-            <h3 className="text-sm font-semibold">ToDo</h3>
+            <h3 className="text-sm font-semibold hover:underline hover:cursor-pointer">
+              ToDo
+            </h3>
           </div>
           <CardAction>
             <Button
