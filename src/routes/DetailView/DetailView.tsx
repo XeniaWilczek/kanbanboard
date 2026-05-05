@@ -1,13 +1,29 @@
 import StatusCards from "@/components/StatusCards/StatusCards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { Board } from "@/types/card.types";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function DetailView() {
+  const { id } = useParams();
   const [edit, setEdit] = useState(false);
   const [boardName, setBoardName] = useState("Boardname");
+  const [boards, setBoards] = useState<Board[]>([
+    {
+      id: "1",
+      title: "Test",
+      tasks: [
+        {
+          id: "1",
+          title: "Testtitle",
+          status: "ToDo",
+          description: "Testdescription",
+        },
+      ],
+    },
+  ]);
 
   function showEditField() {
     console.log(edit);
@@ -70,7 +86,7 @@ export default function DetailView() {
         </Link>
         {showEditField()}
       </div>
-      <StatusCards></StatusCards>
+      <StatusCards board={boards[0]}></StatusCards>
     </div>
   );
 }
