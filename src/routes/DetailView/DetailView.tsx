@@ -71,7 +71,7 @@ export default function DetailView() {
             size="icon"
             className="hover:bg-cyan-50"
           >
-            <Pencil size={28} strokeWidth={2.5}></Pencil>
+            <Pencil className="size-5 stroke-[2.5]"></Pencil>
           </Button>
         </>
       );

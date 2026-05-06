@@ -23,7 +23,7 @@ export default function StatusCards({ board }: { board: Board }) {
             </div>
             <CardAction>
               <Button className="hover:bg-cyan-50">
-                <Plus size={16} strokeWidth={2.5}></Plus>
+                <Plus className="size-4 stroke-[2.5]"></Plus>
               </Button>
             </CardAction>
           </CardTitle>

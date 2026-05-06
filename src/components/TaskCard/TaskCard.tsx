@@ -15,10 +15,7 @@ export default function TaskCard({ task }: { task: Task }) {
       <CardHeader>
         <CardTitle className="w-full flex justify-between items-center">
           <div className="flex justify-start items-center gap-1">
-            <GripVertical
-              size={16}
-              className="text-muted-foreground hover:cursor-pointer"
-            ></GripVertical>
+            <GripVertical className="size-4 text-muted-foreground hover:cursor-pointer"></GripVertical>
             <h3 className="text-sm font-semibold hover:underline hover:cursor-pointer">
               {task.title}
             </h3>
@@ -29,7 +26,7 @@ export default function TaskCard({ task }: { task: Task }) {
               size="icon"
               className="text-muted-foreground hover:text-destructive hover:bg-cyan-50"
             >
-              <Trash2 size={14}></Trash2>
+              <Trash2 className="size-4"></Trash2>
             </Button>
           </CardAction>
         </CardTitle>
@@ -37,11 +34,11 @@ export default function TaskCard({ task }: { task: Task }) {
       <CardContent className="w-full text-muted-foreground flex flex-col gap-2 justify-start items-start">
         <p className="text-xs">{task.description}</p>
         <div className="flex gap-2 justify-center items-center">
-          <CircleUser size="12"></CircleUser>
+          <CircleUser className="size-3"></CircleUser>
           <p className="text-xs">Nutzer</p>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <Calendar size={12}></Calendar>
+          <Calendar className="size-3"></Calendar>
           <p className="text-xs">Frist</p>
         </div>
       </CardContent>

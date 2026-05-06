@@ -24,7 +24,7 @@ export default function BoardCard({ board }: { board: Board }) {
               size="icon"
               className="text-muted-foreground hover:text-destructive hover:bg-cyan-50"
             >
-              <Trash2 size={16}></Trash2>
+              <Trash2 className="size-4"></Trash2>
             </Button>
           </CardAction>
         </CardHeader>
