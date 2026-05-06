@@ -11,14 +11,12 @@ import type { Task } from "@/types/card.types";
 
 export default function TaskCard({ task }: { task: Task }) {
   return (
-    <Card className="task-card mx-4 p-4 flex-col gap-0.5 border border-black rounded-md h-32">
+    <Card className="task-card mx-4 p-4 flex-col gap-0.5 h-32">
       <CardHeader>
-        <CardTitle className="w-full flex justify-between items-center">
-          <div className="flex justify-start items-center gap-1">
+        <CardTitle className="w-full flex justify-between items-center text-sm hover:underline hover:cursor-pointer">
+          <div className="flex justify-start items-center gap-4">
             <GripVertical className="size-4 text-muted-foreground hover:cursor-pointer"></GripVertical>
-            <h3 className="text-sm font-semibold hover:underline hover:cursor-pointer">
-              {task.title}
-            </h3>
+            {task.title}
           </div>
           <CardAction>
             <Button
@@ -31,9 +29,9 @@ export default function TaskCard({ task }: { task: Task }) {
           </CardAction>
         </CardTitle>
       </CardHeader>
-      <CardContent className="w-full text-muted-foreground flex flex-col gap-2 justify-start items-start">
+      <CardContent className="w-full text-muted-foreground flex flex-col gap-1 justify-start items-start">
         <p className="text-xs">{task.description}</p>
-        <div className="flex gap-2 justify-center items-center">
+        <div className="flex gap-4 justify-center items-center">
           <CircleUser className="size-3"></CircleUser>
           <p className="text-xs">Nutzer</p>
         </div>
