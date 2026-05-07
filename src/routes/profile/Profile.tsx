@@ -15,12 +15,12 @@ import { useState } from "react";
 export default function Profile() {
   const [userName, setUserName] = useState("Mustername");
   return (
-    <div className="profile-container flex flex-col justify-center-items-center gap-4 w-[30vw] h-auto mx-auto p-6">
-      <h1 className="text-2xl font-bold">Profil</h1>
+    <div className="profile-container w-[30vw] h-auto mx-auto pt-6">
+      <h1 className="text-2xl font-bold text-left mb-4 ">Profil</h1>
       <Card>
         <CardHeader>
-          <CardTitle className="font-semibold">Nutzername ändern</CardTitle>
-          <CardDescription className="text-xs">
+          <CardTitle>Nutzername ändern</CardTitle>
+          <CardDescription>
             Ändere deinen Nutzernamen für das Kanban-Board.
           </CardDescription>
         </CardHeader>
@@ -37,14 +37,13 @@ export default function Profile() {
               type="text"
               placeholder="Nutzernamen eingeben"
               value={userName}
+              className="text-base font-normal"
             />
           </Field>
         </CardContent>
         <CardFooter>
           <CardAction>
-            <Button className="self-start text-sm text-black text-center font-semibold p-2 rounded-sm bg-cyan-400 hover:bg-cyan-300">
-              Speichern
-            </Button>
+            <Button variant="cyan">Speichern</Button>
           </CardAction>
         </CardFooter>
       </Card>

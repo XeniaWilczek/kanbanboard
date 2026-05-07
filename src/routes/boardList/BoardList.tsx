@@ -25,7 +25,7 @@ export default function BoardList() {
       <div className="board-overview w-[80vw] h-auto mx-auto pt-6 flex flex-col gap-4">
         <div className="board-heading-and-button w-full flex justify-between items-center">
           <h1 className="text-2xl font-bold">Meine Boards</h1>
-          <Button className="flex justify-center items-center gap-1 text-sm text-black font-semibold p-2 rounded-sm bg-cyan-400 hover:bg-cyan-300">
+          <Button variant="cyan">
             <Plus className="size-4 stroke-[2.5]"></Plus>
             <span>Neues Board</span>
           </Button>

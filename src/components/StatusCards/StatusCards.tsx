@@ -6,26 +6,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@base-ui/react/button";
+
 import { Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
 import type { Board } from "@/types/card.types";
+import { Button } from "../ui/button";
 
 export default function StatusCards({ board }: { board: Board }) {
   return (
     <div className="details-list w-full h-64 grid grid-cols-3 gap-4">
-      <Card className="border border-black rounded-md h-64 bg-gray-50">
+      <Card className="h-64 bg-gray-50">
         <CardHeader className="border-b rounded-b-none border-black">
           <CardTitle className="w-full flex justify-between items-center">
             <div className="flex justify-start items-center gap-1">
-              <h3 className="text-sm">ToDo</h3>
-              <CardDescription className="font-normal text-xs">
-                Anzahl
-              </CardDescription>
+              <h3>ToDo</h3>
+              <CardDescription className="font-normal">Anzahl</CardDescription>
             </div>
             <CardAction>
-              <Button className="hover:bg-cyan-50">
-                <Plus className="size-4 stroke-[2.5]"></Plus>
+              <Button variant="iconGhost" size="icon">
+                <Plus className="size-5 stroke-[2.5]"></Plus>
               </Button>
             </CardAction>
           </CardTitle>
@@ -38,18 +37,16 @@ export default function StatusCards({ board }: { board: Board }) {
             ))}
         </CardContent>
       </Card>
-      <Card className="border border-black rounded-md h-64 bg-gray-50">
+      <Card className="border h-64 bg-gray-50">
         <CardHeader className="border-b rounded-b-none border-black pb-2">
           <CardTitle className="w-full flex justify-between items-center">
             <div className="flex justify-start items-center gap-1">
-              <h3 className="text-sm">In Progress</h3>
-              <CardDescription className="font-normal text-xs">
-                Anzahl
-              </CardDescription>
+              <h3>In Progress</h3>
+              <CardDescription className="font-normal">Anzahl</CardDescription>
             </div>
             <CardAction>
-              <Button className="hover:bg-cyan-50">
-                <Plus size={16} strokeWidth={2.5}></Plus>
+              <Button variant="iconGhost" size="icon">
+                <Plus className="size-5 stroke-2.5"></Plus>
               </Button>
             </CardAction>
           </CardTitle>
@@ -59,18 +56,16 @@ export default function StatusCards({ board }: { board: Board }) {
           <div className="task-container"></div>
         </CardContent>
       </Card>
-      <Card className="border border-black rounded-md h-64 bg-gray-50">
+      <Card className="h-64 bg-gray-50">
         <CardHeader className="border-b rounded-b-none border-black pb-2">
           <CardTitle className="w-full flex justify-between items-center">
             <div className="flex justify-start items-center gap-1">
-              <h3 className="text-sm font-semibold">Done</h3>
-              <CardDescription className="font-normal text-xs">
-                Anzahl
-              </CardDescription>
+              <h3>Done</h3>
+              <CardDescription className="font-normal">Anzahl</CardDescription>
             </div>
             <CardAction>
-              <Button className="hover:bg-cyan-50">
-                <Plus size={16} strokeWidth={2.5}></Plus>
+              <Button variant="iconGhost" size="icon">
+                <Plus className="size-5 stroke-2.5"></Plus>
               </Button>
             </CardAction>
           </CardTitle>

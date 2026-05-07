@@ -21,7 +21,7 @@ export default function Root() {
           </Link>
         </div>
       </div>
-      <main>
+      <main className="mt-4">
         <Outlet></Outlet>
       </main>
     </>

@@ -13,18 +13,18 @@ export default function TaskCard({ task }: { task: Task }) {
   return (
     <Card className="task-card mx-4 p-4 flex-col gap-0.5 h-32">
       <CardHeader>
-        <CardTitle className="w-full flex justify-between items-center text-sm hover:underline hover:cursor-pointer">
+        <CardTitle className="w-full flex justify-between items-center hover:underline hover:cursor-pointer">
           <div className="flex justify-start items-center gap-4">
             <GripVertical className="size-4 text-muted-foreground hover:cursor-pointer"></GripVertical>
             {task.title}
           </div>
           <CardAction>
             <Button
-              variant="ghost"
+              variant="iconGhost"
               size="icon"
-              className="text-muted-foreground hover:text-destructive hover:bg-cyan-50"
+              className="text-muted-foreground"
             >
-              <Trash2 className="size-4"></Trash2>
+              <Trash2 className="text-muted-foreground size-4 stroke-[2.5]"></Trash2>
             </Button>
           </CardAction>
         </CardTitle>

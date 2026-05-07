@@ -34,27 +34,20 @@ export default function DetailView() {
             type="text"
             value={boardName}
             onChange={(event) => setBoardName(event.target.value)}
-            className="text-2xl font-bold border-2 border-gray-300 rounded-sm focus-visible:border-cyan-400 focus-visible:ring-0 focus-visible:ring-offset-0"
           ></Input>
           <Button
-            variant="ghost"
+            variant="iconGhost"
             size="icon"
             onClick={() => setEdit(false)}
-            className="hover:bg-cyan-50"
           >
-            <Check
-              size={28}
-              strokeWidth={2.5}
-              className="hover:bg-cyan-50"
-            ></Check>
+            <Check className="size-5 stroke-2.5"></Check>
           </Button>
           <Button
             onClick={() => setEdit(false)}
-            variant="ghost"
+            variant="iconGhost"
             size="icon"
-            className="hover:bg-cyan-50"
           >
-            <X size={28} strokeWidth={2.5} className="hover:bg-cyan-50"></X>
+            <X className="size-5 stroke-2.5"></X>
           </Button>
         </div>
       );
@@ -67,11 +60,10 @@ export default function DetailView() {
               console.log("click");
               setEdit(true);
             }}
-            variant="ghost"
+            variant="iconGhost"
             size="icon"
-            className="hover:bg-cyan-50"
           >
-            <Pencil className="size-5 stroke-[2.5]"></Pencil>
+            <Pencil className="size-5 stroke-2.5"></Pencil>
           </Button>
         </>
       );
@@ -82,7 +74,9 @@ export default function DetailView() {
     <div className="details w-[80vw] h-auto mx-auto p-6 flex flex-col gap-4">
       <div className="details-heading-and-buttons w-fit flex justify-start items-center gap-2">
         <Link to="/">
-          <ArrowLeft size={28} strokeWidth={2.5}></ArrowLeft>
+          <Button variant="iconGhost">
+            <ArrowLeft className="size-5 stroke-2.5"></ArrowLeft>
+          </Button>
         </Link>
         {showEditField()}
       </div>

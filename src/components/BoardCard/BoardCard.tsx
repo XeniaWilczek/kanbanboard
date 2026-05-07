@@ -18,18 +18,14 @@ export default function BoardCard({ board }: { board: Board }) {
           <div className="flex justify-between">
             <CardTitle className="hover:underline">{board.title}</CardTitle>
             <CardAction>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-destructive hover:bg-cyan-50"
-              >
-                <Trash2 className="size-4"></Trash2>
+              <Button variant="iconGhost" size="icon">
+                <Trash2 className="size-4 stroke-[2.5] text-muted-foreground"></Trash2>
               </Button>
             </CardAction>
           </div>
-          <CardDescription className="flex items-center gap-0.5 col-span-full text-xs">
+          <CardDescription className="flex items-center gap-0.5 col-span-full">
             <span>3 Spalten</span>
-            <Dot strokeWidth={1.5} size={16}></Dot>
+            <Dot className="stroke-1.5 size-4"></Dot>
             <span>{board.tasks.length} Tasks</span>
           </CardDescription>
         </CardHeader>
