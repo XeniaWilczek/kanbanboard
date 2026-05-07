@@ -1,4 +1,4 @@
-import StatusCards from "@/components/StatusCards/StatusCards";
+import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Board } from "@/types/card.types";
@@ -80,7 +80,20 @@ export default function DetailView() {
         </Link>
         {showEditField()}
       </div>
-      <StatusCards board={boards[0]}></StatusCards>
+      <div className="flex gap-4">
+        <StatusCard
+          title={"ToDo"}
+          tasks={boards[0].tasks.filter((t) => t.status === "ToDo")}
+        ></StatusCard>
+        <StatusCard
+          title={"InProgress"}
+          tasks={boards[0].tasks.filter((t) => t.status === "InProgress")}
+        ></StatusCard>
+        <StatusCard
+          title={"Done"}
+          tasks={boards[0].tasks.filter((t) => t.status === "Done")}
+        ></StatusCard>
+      </div>
     </div>
   );
 }

@@ -8,10 +8,20 @@ import {
 import { Button } from "../ui/button";
 import { Calendar, CircleUser, GripVertical, Trash2 } from "lucide-react";
 import type { Task } from "@/types/card.types";
+import { useState } from "react";
 
 export default function TaskCard({ task }: { task: Task }) {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", task.id);
+  };
+
   return (
-    <Card className="task-card mx-4 p-4 flex-col gap-0.5 h-32">
+    <Card
+      className="task-card mx-4 p-4 flex-col gap-0.5 h-32"
+      draggable={true}
+      onDragStart={handleDragStart}
+    >
       <CardHeader>
         <CardTitle className="w-full flex justify-between items-center hover:underline hover:cursor-pointer">
           <div className="flex justify-start items-center gap-4">
