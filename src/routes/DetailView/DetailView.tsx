@@ -26,12 +26,12 @@ export default function DetailView() {
   ]);
 
   function showEditField() {
-    console.log(edit);
     if (edit) {
       return (
         <div className="flex gap-2 justify-center items-center">
           <Input
             type="text"
+            placeholder="Boardnamen bearbeiten..."
             value={boardName}
             onChange={(event) => setBoardName(event.target.value)}
           ></Input>

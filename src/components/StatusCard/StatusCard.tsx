@@ -21,26 +21,58 @@ export default function StatusCard({
 }) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
-  function handleDragOver(e: { preventDefault: () => void }) {
+  function isTaskInTasks(status: string): boolean {
+    return status.toLowerCase() === title.toLowerCase();
+  }
+
+  function handleDraggingOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
+
+    //es wird nach dem key gesucht, statt nach dem Value
+    const statusType = e.dataTransfer.types.find((type) =>
+      type.startsWith("status-"),
+    );
+
+    if (!statusType) return;
+
+    const taskStatus = statusType.replace("status-", "");
+    console.log(statusType);
+
+    if (isTaskInTasks(taskStatus)) {
+      setIsDraggingOver(false);
+    } else {
+      setIsDraggingOver(true);
+    }
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+    setIsDraggingOver(false);
+  }
+
+  function handleDragEnter(e: React.DragEvent<HTMLDivElement>) {
     setIsDraggingOver(true);
   }
-  const handleDragLeave = (e) => {
-    setIsDraggingOver(false);
-  };
-  const handleDragEnter = (e) => {
-    setIsDraggingOver(true);
-  };
-  const handleDrop = (e) => {
-    const id = parseInt(e.dataTransfer.getData("id"), 10);
-    setIsDraggingOver(false);
-  };
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    const statusType = e.dataTransfer.types.find((type) =>
+      type.startsWith("status-"),
+    );
+    console.log(statusType);
+    if (!statusType) return;
+
+    const taskStatus = statusType.replace("status-", "");
+    console.log(statusType);
+    if (isTaskInTasks(taskStatus)) {
+      setIsDraggingOver(false);
+    } else {
+      //Call funktion to move task to this column
+    }
+  }
 
   return (
-    //verhindern, dass man dasselbe Task-Element erneut in dieselbe StatusCard schieben kann
     <Card
       className={`w-full h-auto bg-gray-50 ${isDraggingOver ? "border border-dashed border-cyan-400 rounded-md" : ""}`}
-      onDragOver={handleDragOver}
+      onDragOver={handleDraggingOver}
       onDragLeave={handleDragLeave}
       onDragEnter={handleDragEnter}
       onDrop={handleDrop}
@@ -53,9 +85,11 @@ export default function StatusCard({
               ({tasks.length})
             </CardDescription>
           </div>
-          <Button variant="ghost" size="icon">
-            <Plus className="size-5 stroke-[2.5]" />
-          </Button>
+          <CardAction>
+            <Button variant="iconGhost" size="icon">
+              <Plus className="size-5 stroke-[2.5]" />
+            </Button>
+          </CardAction>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6 flex flex-col gap-3">

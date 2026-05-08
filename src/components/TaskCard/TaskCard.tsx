@@ -8,12 +8,10 @@ import {
 import { Button } from "../ui/button";
 import { Calendar, CircleUser, GripVertical, Trash2 } from "lucide-react";
 import type { Task } from "@/types/card.types";
-import { useState } from "react";
 
 export default function TaskCard({ task }: { task: Task }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", task.id);
+    e.dataTransfer.setData(`status-${task.status}`, "");
   };
 
   return (
