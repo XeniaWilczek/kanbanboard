@@ -85,6 +85,7 @@ export default function BoardList() {
                   placeholder="Board-Name"
                   value={newBoardTitle}
                   onChange={(e) => setNewBoardTitle(e.target.value)}
+                  className="placeholder: font-normal text-base"
                 />
               </Field>
               <DialogFooter>
