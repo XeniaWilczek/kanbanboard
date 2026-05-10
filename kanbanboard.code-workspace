@@ -3,6 +3,9 @@
     {
       "path": ".",
     },
+    {
+      "path": "../../Modul 11/User-Uebersicht",
+    },
   ],
   "settings": {},
 }
