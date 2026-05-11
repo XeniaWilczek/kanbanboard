@@ -10,7 +10,13 @@ import type { Board } from "@/types/card.types";
 import { Dot, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function BoardCard({ board }: { board: Board }) {
+export default function BoardCard({
+  board,
+  onDelete,
+}: {
+  board: Board;
+  onDelete: (id: string) => void;
+}) {
   return (
     <Link to={`/boardlist/${board.id}`}>
       <Card className="transition-shadow hover:shadow-md hover:cursor-pointer">
@@ -18,7 +24,16 @@ export default function BoardCard({ board }: { board: Board }) {
           <div className="flex justify-between">
             <CardTitle className="hover:underline">{board.title}</CardTitle>
             <CardAction>
-              <Button variant="iconGhost" size="icon">
+              <Button
+                variant="iconGhost"
+                size="icon"
+                onClick={(_e: React.MouseEvent<HTMLButtonElement>) => {
+                  // Verhindert, dass der Link zur Detailansicht ausgelöst wird
+                  _e.preventDefault();
+                  _e.stopPropagation();
+                  onDelete(board.id);
+                }}
+              >
                 <Trash2 className="size-4 stroke-[2.5] text-muted-foreground"></Trash2>
               </Button>
             </CardAction>

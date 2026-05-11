@@ -1,8 +1,6 @@
 import { Plus } from "lucide-react";
 import BoardCard from "../../components/BoardCard/BoardCard";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import type { Board } from "@/types/card.types";
 import {
   Dialog,
   DialogClose,
@@ -16,23 +14,13 @@ import {
 import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useReducer, useState } from "react";
+import { getBoards } from "@/lib/api";
+import { useBoardReducer } from "@/hooks/useBoardReducer";
+import type { Board } from "@/types/card.types";
 
 export default function BoardList() {
-  const [boards, setBoards] = useState<Board[]>([
-    {
-      id: "1",
-      title: "Test",
-      tasks: [
-        {
-          id: "1",
-          title: "Testtitle",
-          status: "ToDo",
-          description: "Testdescription",
-        },
-      ],
-    },
-  ]);
-
+  const [boards, boardsDispatch] = useReducer(useBoardReducer, [], getBoards);
   const [newBoardTitle, setNewBoardTitle] = useState("");
 
   function handleCreateBoardClick() {
@@ -43,14 +31,14 @@ export default function BoardList() {
       title: newBoardTitle,
       tasks: [],
     };
-
-    setBoards((prevBoards) => [...prevBoards, newBoard]);
+    boardsDispatch({ type: "CREATE_BOARD", payload: newBoard });
     setNewBoardTitle("");
   }
 
-  //Hinzufügen: p-Element "Noch keine Boards vorhanden", wenn die Liste leer ist
-  //Update im LocalStorage nach Erstellen eines Boards hinzufügen
-  //Popup soll sich nach dem Erstellen autmatisch schließen
+  function handleDeleteBoardClick(id: string) {
+    boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
+  }
+
   return (
     <>
       <div className="board-overview w-[80vw] h-auto mx-auto pt-6 flex flex-col gap-4">
@@ -96,21 +84,34 @@ export default function BoardList() {
                     </Button>
                   }
                 />
-                <Button
-                  variant="cyan"
-                  type="submit"
-                  onClick={handleCreateBoardClick}
-                >
-                  Erstellen
-                </Button>
+                <DialogClose>
+                  <Button
+                    variant="cyan"
+                    type="submit"
+                    onClick={handleCreateBoardClick}
+                  >
+                    Erstellen
+                  </Button>
+                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
         <div className="board-list w-full h-auto grid grid-cols-3 gap-4 bg-white">
-          {boards.map((board) => {
-            return <BoardCard key={board.id} board={board}></BoardCard>;
-          })}
+          {boards.length === 0 && (
+            <p className="text-gray-400 text-center py-8 col-span-3">
+              Noch keine Boards vorhanden.
+            </p>
+          )}
+
+          {boards.length > 0 &&
+            boards.map((board) => (
+              <BoardCard
+                key={board.id}
+                board={board}
+                onDelete={handleDeleteBoardClick}
+              />
+            ))}
         </div>
       </div>
     </>
