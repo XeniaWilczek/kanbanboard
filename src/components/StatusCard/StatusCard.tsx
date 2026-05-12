@@ -11,29 +11,18 @@ import TaskCard from "../TaskCard/TaskCard";
 import type { Board, Task } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { useReducer } from "react";
-import { useDetailReducer } from "@/hooks/useDetailReducer";
-import { getBoard } from "@/lib/api";
-import { useParams } from "react-router-dom";
+import type { DetailAction } from "@/hooks/useDetailReducer";
 
 export default function StatusCard({
   title,
   tasks,
+  detailDispatch,
 }: {
   title: string;
   tasks: Task[];
+  detailDispatch: DetailAction;
 }) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-  const { id } = useParams<{ id: string }>();
-  const requiredBoard: Board = getBoard(id || "") || {
-    id: id || "",
-    title: "Standard-Board",
-    tasks: [],
-  };
-  const [details, detailsDispatch] = useReducer(
-    useDetailReducer,
-    requiredBoard,
-  );
 
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();

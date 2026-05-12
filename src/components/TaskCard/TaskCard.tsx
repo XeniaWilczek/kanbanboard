@@ -8,13 +8,16 @@ import {
 import { Button } from "../ui/button";
 import { Calendar, CircleUser, GripVertical, Trash2 } from "lucide-react";
 import type { Task } from "@/types/card.types";
+import type { DetailAction } from "@/hooks/useDetailReducer";
 
 export default function TaskCard({
   task,
   handleDeleteTaskClick,
+  detailDispatch,
 }: {
   task: Task;
   handleDeleteTaskClick: () => void;
+  detailDispatch: DetailAction;
 }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(`status-${task.status}`, "");
