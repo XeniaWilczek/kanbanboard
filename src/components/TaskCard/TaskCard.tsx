@@ -9,7 +9,13 @@ import { Button } from "../ui/button";
 import { Calendar, CircleUser, GripVertical, Trash2 } from "lucide-react";
 import type { Task } from "@/types/card.types";
 
-export default function TaskCard({ task }: { task: Task }) {
+export default function TaskCard({
+  task,
+  handleDeleteTaskClick,
+}: {
+  task: Task;
+  handleDeleteTaskClick: () => void;
+}) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(`status-${task.status}`, "");
   };
@@ -31,6 +37,7 @@ export default function TaskCard({ task }: { task: Task }) {
               variant="iconGhost"
               size="icon"
               className="text-muted-foreground"
+              onClick={handleDeleteTaskClick}
             >
               <Trash2 className="text-muted-foreground size-4 stroke-[2.5]"></Trash2>
             </Button>

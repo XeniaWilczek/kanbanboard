@@ -1,29 +1,39 @@
 import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDetailReducer } from "@/hooks/useDetailReducer";
+import { getBoard } from "@/lib/api";
 import type { Board } from "@/types/card.types";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 export default function DetailView() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const requiredBoard: Board = getBoard(id || "") || {
+    id: id || "",
+    title: "Standard-Board",
+    tasks: [],
+  };
+
+  const [details, detailsDispatch] = useReducer(
+    useDetailReducer,
+    requiredBoard,
+  );
+
   const [edit, setEdit] = useState(false);
-  const [boardName, setBoardName] = useState("Boardname");
-  const [boards, setBoards] = useState<Board[]>([
-    {
-      id: "1",
-      title: "Test",
-      tasks: [
-        {
-          id: "1",
-          title: "Testtitle",
-          status: "ToDo",
-          description: "Testdescription",
-        },
-      ],
-    },
-  ]);
+
+  function handleSaveClick() {
+    detailsDispatch({
+      type: "UPDATE_TITLE",
+      payload: { title: details.title },
+    });
+    setEdit(false);
+  }
+
+  function handleCancelClick() {
+    setEdit(false);
+  }
 
   function showEditField() {
     if (edit) {
@@ -32,21 +42,18 @@ export default function DetailView() {
           <Input
             type="text"
             placeholder="Boardnamen bearbeiten..."
-            value={boardName}
-            onChange={(event) => setBoardName(event.target.value)}
+            value={details.title}
+            onChange={(event) =>
+              detailsDispatch({
+                type: "UPDATE_TITLE",
+                payload: { title: event.target.value },
+              })
+            }
           ></Input>
-          <Button
-            variant="iconGhost"
-            size="icon"
-            onClick={() => setEdit(false)}
-          >
+          <Button variant="iconGhost" size="icon" onClick={handleSaveClick}>
             <Check className="size-5 stroke-2.5"></Check>
           </Button>
-          <Button
-            onClick={() => setEdit(false)}
-            variant="iconGhost"
-            size="icon"
-          >
+          <Button onClick={handleCancelClick} variant="iconGhost" size="icon">
             <X className="size-5 stroke-2.5"></X>
           </Button>
         </div>
@@ -54,7 +61,7 @@ export default function DetailView() {
     } else {
       return (
         <>
-          <h1 className="text-2xl font-bold">{boardName}</h1>
+          <h1 className="text-2xl font-bold">{details.title}</h1>
           <Button
             onClick={() => {
               console.log("click");
@@ -83,15 +90,15 @@ export default function DetailView() {
       <div className="flex gap-4">
         <StatusCard
           title={"ToDo"}
-          tasks={boards[0].tasks.filter((t) => t.status === "ToDo")}
+          tasks={details.tasks.filter((t) => t.status === "ToDo")}
         ></StatusCard>
         <StatusCard
           title={"InProgress"}
-          tasks={boards[0].tasks.filter((t) => t.status === "InProgress")}
+          tasks={details.tasks.filter((t) => t.status === "InProgress")}
         ></StatusCard>
         <StatusCard
           title={"Done"}
-          tasks={boards[0].tasks.filter((t) => t.status === "Done")}
+          tasks={details.tasks.filter((t) => t.status === "Done")}
         ></StatusCard>
       </div>
     </div>

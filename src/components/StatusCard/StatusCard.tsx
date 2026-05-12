@@ -8,9 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
-import type { Task } from "@/types/card.types";
+import type { Board, Task } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import { useReducer } from "react";
+import { useDetailReducer } from "@/hooks/useDetailReducer";
+import { getBoard } from "@/lib/api";
+import { useParams } from "react-router-dom";
 
 export default function StatusCard({
   title,
@@ -20,6 +24,16 @@ export default function StatusCard({
   tasks: Task[];
 }) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const requiredBoard: Board = getBoard(id || "") || {
+    id: id || "",
+    title: "Standard-Board",
+    tasks: [],
+  };
+  const [details, detailsDispatch] = useReducer(
+    useDetailReducer,
+    requiredBoard,
+  );
 
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();
@@ -68,6 +82,13 @@ export default function StatusCard({
       //Call funktion to move task to this column
     }
   }
+  function handleCreateTaskClick() {
+    detailsDispatch({
+      type: "CREATE_TASK",
+      payload: { title: boardName },
+    });
+  }
+  function handleDeleteTaskClick() {}
 
   return (
     <Card
@@ -86,7 +107,11 @@ export default function StatusCard({
             </CardDescription>
           </div>
           <CardAction>
-            <Button variant="iconGhost" size="icon">
+            <Button
+              variant="iconGhost"
+              size="icon"
+              onClick={handleCreateTaskClick}
+            >
               <Plus className="size-5 stroke-[2.5]" />
             </Button>
           </CardAction>
@@ -101,7 +126,13 @@ export default function StatusCard({
         {tasks.length > 0 && (
           <div className="flex flex-col gap-2">
             {tasks.map((t) => (
-              <TaskCard key={t.id} task={t} />
+              <TaskCard
+                key={t.id}
+                task={t}
+                handleDeleteTaskClick={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             ))}
           </div>
         )}

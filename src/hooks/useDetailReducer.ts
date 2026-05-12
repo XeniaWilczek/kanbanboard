@@ -1,34 +1,38 @@
-import { saveBoards } from "@/lib/api";
+import { saveBoard } from "@/lib/api";
 import type { Board, Task } from "@/types/card.types";
 
-
-export type DetailState = Board[];//Stimmt es??
-
+export type DetailState = Board;
 
 export type DetailAction =
-  | { type: "UPDATE_TITLE"; payload: string }
-  | { type: "CREATE_TASK"; payload: Task};
-{ type: "DELETE_TASK", payload: task.id }
+  | { type: "UPDATE_TITLE"; payload: { title: string } }
+  | { type: "CREATE_TASK"; payload: { task: Task } }
+  | { type: "DELETE_TASK"; payload: { taskId: string } };
 
-export function useDetailReducer(state: Board[], action: DetailAction): Board[] {
-  let newState = state;
+export function useDetailReducer(
+  state: DetailState,
+  action: DetailAction,
+): DetailState {
+  let newDetailState = state;
 
   switch (action.type) {
     case "UPDATE_TITLE": {
-      newState = [...state, action.payload];
+      newDetailState = { ...state, title: action.payload.title };
       break;
     }
 
     case "CREATE_TASK": {
-      newState = state.filter(
-        (board: { id: string }) => board.id !== action.payload.id,
-      );
+      newDetailState = {
+        ...state,
+        tasks: [...state.tasks, action.payload.task],
+      };
       break;
     }
+
     case "DELETE_TASK": {
-      newState = state.filter(
-        (board: { id: string }) => board.id !== action.payload.id,
-      );
+      newDetailState = {
+        ...state,
+        tasks: state.tasks.filter((t) => t.id !== action.payload.taskId),
+      };
       break;
     }
 
@@ -37,6 +41,7 @@ export function useDetailReducer(state: Board[], action: DetailAction): Board[] 
     }
   }
 
-  saveBoards(newState);
-  return newState;
+  saveBoard(newDetailState);
+
+  return newDetailState;
 }
