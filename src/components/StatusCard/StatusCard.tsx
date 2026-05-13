@@ -6,12 +6,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Select } from "@/components/ui/select";
+import { Field } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
 import type { Board, Task } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import type { DetailAction } from "@/hooks/useDetailReducer";
+import type { text } from "stream/consumers";
 
 export default function StatusCard({
   title,
@@ -22,6 +37,14 @@ export default function StatusCard({
   tasks: Task[];
   detailDispatch: DetailAction;
 }) {
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const taskCard: Task = {
+    id: String(Math.random()),
+    title: newTaskTitle,
+    status: "ToDo" | "InProgress" | "Done",
+    description: "",
+  };
+
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   function isTaskInTasks(status: string): boolean {
@@ -31,7 +54,7 @@ export default function StatusCard({
   function handleDraggingOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
 
-    //es wird nach dem key gesucht, statt nach dem Value
+    //Es wird nach dem key gesucht, statt nach dem Value
     const statusType = e.dataTransfer.types.find((type) =>
       type.startsWith("status-"),
     );
@@ -96,13 +119,91 @@ export default function StatusCard({
             </CardDescription>
           </div>
           <CardAction>
-            <Button
-              variant="iconGhost"
-              size="icon"
-              onClick={handleCreateTaskClick}
-            >
-              <Plus className="size-5 stroke-[2.5]" />
-            </Button>
+            <Dialog>
+              <DialogTrigger
+                render={
+                  <Button
+                    variant="iconGhost"
+                    size="icon"
+                    onClick={handleCreateTaskClick}
+                  >
+                    <Plus className="size-5 stroke-[2.5]" />
+                  </Button>
+                }
+              ></DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-semibold">
+                    Neuen Task erstellen:
+                  </DialogTitle>
+                  <DialogDescription className="text-xs">
+                    Erstelle eine neue Aufgabe für diese Spalte.
+                  </DialogDescription>
+                </DialogHeader>
+                <Field>
+                  <Label htmlFor="taskname" className="text-sm font-semibold">
+                    Taskname:
+                  </Label>
+                  <Input
+                    id="taskname"
+                    name="taskname"
+                    placeholder="Tasknamen erstellen"
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    className="placeholder: font-normal text-base"
+                  />
+                </Field>
+                <Field>
+                  <Label
+                    htmlFor="taskdescription"
+                    className="text-sm font-semibold"
+                  >
+                    Beschreibung:
+                  </Label>
+                  <Input
+                    id="taskdescription"
+                    name="taskdescription"
+                    placeholder="Was soll erledigt werden?"
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    className="placeholder: font-normal text-base"
+                  />
+                </Field>
+                <Field>
+                  <Label
+                    htmlFor="responsibility"
+                    className="text-sm font-semibold"
+                  >
+                    Zugewiesen an:
+                  </Label>
+                  <Select
+                    id="responsibility"
+                    name="boardname"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    className="placeholder: font-normal text-base"
+                  />
+                </Field>
+                <Field>
+                  <Label
+                    htmlFor="boardname-1"
+                    className="text-sm font-semibold"
+                  >
+                    Boardname:
+                  </Label>
+                  <Input
+                    id="boardname-1"
+                    name="boardname"
+                    placeholder="Board-Name"
+                    value={newBoardTitle}
+                    onChange={(e) => setNewBoardTitle(e.target.value)}
+                    className="placeholder: font-normal text-base"
+                  />
+                </Field>
+              </DialogContent>
+            </Dialog>
           </CardAction>
         </CardTitle>
       </CardHeader>
@@ -120,6 +221,12 @@ export default function StatusCard({
                 task={t}
                 handleDeleteTaskClick={function (): void {
                   throw new Error("Function not implemented.");
+                }}
+                detailDispatch={{
+                  type: "UPDATE_TITLE",
+                  payload: {
+                    title: "",
+                  },
                 }}
               />
             ))}

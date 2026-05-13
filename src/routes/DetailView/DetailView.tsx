@@ -22,16 +22,17 @@ export default function DetailView() {
   );
 
   const [edit, setEdit] = useState(false);
+  const [boardTitle, setBoardTitle] = useState("");
 
-  function handleSaveClick() {
+  function handleSaveTitleClick() {
     detailsDispatch({
       type: "UPDATE_TITLE",
-      payload: { title: details.title },
+      payload: { title: boardTitle },
     });
     setEdit(false);
   }
 
-  function handleCancelClick() {
+  function handleCancelTitleClick() {
     setEdit(false);
   }
 
@@ -41,19 +42,22 @@ export default function DetailView() {
         <div className="flex gap-2 justify-center items-center">
           <Input
             type="text"
-            placeholder="Boardnamen bearbeiten..."
-            value={details.title}
-            onChange={(event) =>
-              detailsDispatch({
-                type: "UPDATE_TITLE",
-                payload: { title: event.target.value },
-              })
-            }
+            placeholder="Boardnamen bearbeiten"
+            value={boardTitle}
+            onChange={(event) => setBoardTitle(event.target.value)}
           ></Input>
-          <Button variant="iconGhost" size="icon" onClick={handleSaveClick}>
+          <Button
+            variant="iconGhost"
+            size="icon"
+            onClick={handleSaveTitleClick}
+          >
             <Check className="size-5 stroke-2.5"></Check>
           </Button>
-          <Button onClick={handleCancelClick} variant="iconGhost" size="icon">
+          <Button
+            onClick={handleCancelTitleClick}
+            variant="iconGhost"
+            size="icon"
+          >
             <X className="size-5 stroke-2.5"></X>
           </Button>
         </div>
@@ -64,7 +68,7 @@ export default function DetailView() {
           <h1 className="text-2xl font-bold">{details.title}</h1>
           <Button
             onClick={() => {
-              console.log("click");
+              setBoardTitle(details.title);
               setEdit(true);
             }}
             variant="iconGhost"
@@ -91,14 +95,32 @@ export default function DetailView() {
         <StatusCard
           title={"ToDo"}
           tasks={details.tasks.filter((t) => t.status === "ToDo")}
+          detailDispatch={{
+            type: "UPDATE_TITLE",
+            payload: {
+              title: "",
+            },
+          }}
         ></StatusCard>
         <StatusCard
           title={"InProgress"}
           tasks={details.tasks.filter((t) => t.status === "InProgress")}
+          detailDispatch={{
+            type: "UPDATE_TITLE",
+            payload: {
+              title: "",
+            },
+          }}
         ></StatusCard>
         <StatusCard
           title={"Done"}
           tasks={details.tasks.filter((t) => t.status === "Done")}
+          detailDispatch={{
+            type: "UPDATE_TITLE",
+            payload: {
+              title: "",
+            },
+          }}
         ></StatusCard>
       </div>
     </div>

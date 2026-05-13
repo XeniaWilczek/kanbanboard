@@ -64,13 +64,14 @@ export default function BoardList() {
                 </DialogDescription>
               </DialogHeader>
               <Field>
-                <Label htmlFor="boardname-1" className="text-sm font-semibold">
+                <Label htmlFor="boardname" className="text-sm font-semibold">
                   Boardname:
                 </Label>
                 <Input
-                  id="boardname-1"
+                  id="boardname"
                   name="boardname"
                   placeholder="Board-Name"
+                  type="text"
                   value={newBoardTitle}
                   onChange={(e) => setNewBoardTitle(e.target.value)}
                   className="placeholder: font-normal text-base"

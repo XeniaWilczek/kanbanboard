@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 export default function Profile() {
-  const [userName, setUserName] = useState("Mustername");
+  const [userName, setUserName] = useState("");
   return (
     <div className="profile-container w-[30vw] h-auto mx-auto pt-6">
       <h1 className="text-2xl font-bold text-left mb-4 ">Profil</h1>
@@ -28,7 +28,7 @@ export default function Profile() {
           <Field>
             <FieldLabel
               htmlFor="username-input"
-              className="text-xs font-semibold"
+              className="text-sm font-semibold"
             >
               Nutzername:
             </FieldLabel>
@@ -37,7 +37,6 @@ export default function Profile() {
               type="text"
               placeholder="Nutzernamen eingeben"
               value={userName}
-              className="text-base font-normal"
             />
           </Field>
         </CardContent>
