@@ -16,34 +16,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Select } from "@/components/ui/select";
-import { Field } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
 import type { Board, Task } from "@/types/card.types";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, type Dispatch } from "react";
 import type { DetailAction } from "@/hooks/useDetailReducer";
-import type { text } from "stream/consumers";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "../ui/textarea";
 
 export default function StatusCard({
   title,
   tasks,
-  detailDispatch,
+  detailsDispatch,
 }: {
   title: string;
   tasks: Task[];
-  detailDispatch: DetailAction;
+  detailsDispatch: Dispatch<DetailAction>;
 }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const taskCard: Task = {
-    id: String(Math.random()),
-    title: newTaskTitle,
-    status: "ToDo" | "InProgress" | "Done",
-    description: "",
-  };
+  const [responsibility, setResponsibility] = useState("none");
 
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
@@ -91,15 +95,26 @@ export default function StatusCard({
     if (isTaskInTasks(taskStatus)) {
       setIsDraggingOver(false);
     } else {
-      //Call funktion to move task to this column
+      //Funktion zum Ablegen eines Tasks in anderer Spalte hinzufügen
     }
   }
   function handleCreateTaskClick() {
+    if (!newTaskTitle.trim()) return;
+    //Task-Type bekommt zwei weitere EIgenschaften: responsibility und deadline
+    const taskCard: Task = {
+      id: String(Math.random()),
+      title: newTaskTitle,
+      status: title as "ToDo" | "InProgress" | "Done",
+      description: "",
+    };
+
     detailsDispatch({
       type: "CREATE_TASK",
-      payload: { title: boardName },
+      payload: { task: taskCard },
     });
+    setNewTaskTitle("");
   }
+
   function handleDeleteTaskClick() {}
 
   return (
@@ -122,11 +137,7 @@ export default function StatusCard({
             <Dialog>
               <DialogTrigger
                 render={
-                  <Button
-                    variant="iconGhost"
-                    size="icon"
-                    onClick={handleCreateTaskClick}
-                  >
+                  <Button variant="iconGhost" size="icon">
                     <Plus className="size-5 stroke-[2.5]" />
                   </Button>
                 }
@@ -156,52 +167,99 @@ export default function StatusCard({
                 </Field>
                 <Field>
                   <Label
-                    htmlFor="taskdescription"
+                    htmlFor="task-description"
                     className="text-sm font-semibold"
                   >
                     Beschreibung:
                   </Label>
-                  <Input
-                    id="taskdescription"
-                    name="taskdescription"
+                  <Textarea
+                    id="task-description"
+                    name="task-description"
                     placeholder="Was soll erledigt werden?"
-                    type="text"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="placeholder: font-normal text-base"
+                    //value={newTaskDescription}
+                    //onChange={(e) => setNewTaskDescription(e.target.value)}
+                    className="placeholder:font-normal text-base"
                   />
                 </Field>
                 <Field>
                   <Label
-                    htmlFor="responsibility"
+                    htmlFor="task-responsibility"
                     className="text-sm font-semibold"
                   >
                     Zugewiesen an:
                   </Label>
                   <Select
-                    id="responsibility"
-                    name="boardname"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="placeholder: font-normal text-base"
-                  />
+                  //useState hinzufügen
+                  // onValueChange={(value) => setResponsibility(value)}
+                  //value={responsibility}
+                  >
+                    <SelectTrigger
+                      id="task-responsibility"
+                      name="task-responsibility"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="none">---</SelectItem>
+                      <SelectItem value="Person 1">Person 1</SelectItem>
+                      <SelectItem value="Person 2">Person 2</SelectItem>
+                      <SelectItem value="Person 2">Person 3</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </Field>
+
                 <Field>
-                  <Label
-                    htmlFor="boardname-1"
+                  <FieldLabel
+                    htmlFor="task-deadline"
                     className="text-sm font-semibold"
                   >
-                    Boardname:
-                  </Label>
-                  <Input
-                    id="boardname-1"
-                    name="boardname"
-                    placeholder="Board-Name"
-                    value={newBoardTitle}
-                    onChange={(e) => setNewBoardTitle(e.target.value)}
-                    className="placeholder: font-normal text-base"
-                  />
+                    Deadline:
+                  </FieldLabel>
+                  <Popover>
+                    <PopoverTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          data-empty={!new Date()}
+                          className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
+                        />
+                      }
+                    >
+                      <CalendarIcon />
+                      {new Date() ? (
+                        format(new Date(), "dd.MM.yyyy")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={new Date()}
+                        //onSelect={}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </Field>
+                <DialogFooter>
+                  <DialogClose
+                    render={
+                      <Button variant="outline" className="hover:bg-cyan-50">
+                        Abbrechen
+                      </Button>
+                    }
+                  />
+                  <DialogClose>
+                    <Button
+                      variant="cyan"
+                      type="submit"
+                      onClick={handleCreateTaskClick}
+                    >
+                      Erstellen
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </CardAction>

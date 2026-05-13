@@ -95,32 +95,17 @@ export default function DetailView() {
         <StatusCard
           title={"ToDo"}
           tasks={details.tasks.filter((t) => t.status === "ToDo")}
-          detailDispatch={{
-            type: "UPDATE_TITLE",
-            payload: {
-              title: "",
-            },
-          }}
+          detailsDispatch={detailsDispatch}
         ></StatusCard>
         <StatusCard
           title={"InProgress"}
           tasks={details.tasks.filter((t) => t.status === "InProgress")}
-          detailDispatch={{
-            type: "UPDATE_TITLE",
-            payload: {
-              title: "",
-            },
-          }}
+          detailsDispatch={detailsDispatch}
         ></StatusCard>
         <StatusCard
           title={"Done"}
           tasks={details.tasks.filter((t) => t.status === "Done")}
-          detailDispatch={{
-            type: "UPDATE_TITLE",
-            payload: {
-              title: "",
-            },
-          }}
+          detailsDispatch={detailsDispatch}
         ></StatusCard>
       </div>
     </div>
