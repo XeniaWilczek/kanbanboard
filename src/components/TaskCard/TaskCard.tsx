@@ -14,12 +14,10 @@ import type { Dispatch } from "react";
 
 export default function TaskCard({
   task,
-  handleDeleteTaskClick,
-  detailsDispatch,
+  onDelete,
 }: {
   task: Task;
-  handleDeleteTaskClick: () => void;
-  detailsDispatch: Dispatch<DetailAction>;
+  onDelete: (id: string) => void;
 }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(`status-${task.status}`, "");
@@ -42,7 +40,9 @@ export default function TaskCard({
               variant="iconGhost"
               size="icon"
               className="text-muted-foreground"
-              onClick={handleDeleteTaskClick}
+              onClick={(_e: React.MouseEvent<HTMLButtonElement>) => {
+                onDelete(task.id);
+              }}
             >
               <Trash2 className="text-muted-foreground size-4 stroke-[2.5]"></Trash2>
             </Button>

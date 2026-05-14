@@ -46,10 +46,10 @@ export default function StatusCard({
   tasks: Task[];
   detailsDispatch: Dispatch<DetailAction>;
 }) {
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [responsibility, setResponsibility] = useState("none");
   const [description, setDescription] = useState("");
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [deadline, setDeadline] = useState(new Date());
   const hasPassed = deadline
     ? deadline.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
@@ -124,7 +124,9 @@ export default function StatusCard({
     setDeadline(new Date());
   }
 
-  function handleDeleteTaskClick() {}
+  function handleDeleteTaskClick(id: string) {
+    detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
+  }
 
   return (
     <Card
@@ -185,9 +187,9 @@ export default function StatusCard({
                     id="task-description"
                     name="task-description"
                     placeholder="Was soll erledigt werden?"
+                    className="placeholder:font-normal text-base"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="placeholder:font-normal text-base"
                   />
                 </Field>
                 <Field>
@@ -198,11 +200,11 @@ export default function StatusCard({
                     Zugewiesen an:
                   </Label>
                   <Select
+                    value={responsibility}
                     //Typabsicherung bei Select-Komponente
                     onValueChange={(value: string | null) =>
                       setResponsibility(value ?? "")
                     }
-                    value={responsibility}
                   >
                     <SelectTrigger
                       id="task-responsibility"
@@ -240,7 +242,7 @@ export default function StatusCard({
                       {deadline ? (
                         format(deadline, "dd.MM.yyyy")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Wähle ein Datum aus.</span>
                       )}
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -290,14 +292,7 @@ export default function StatusCard({
         {tasks.length > 0 && (
           <div className="flex flex-col gap-2">
             {tasks.map((t) => (
-              <TaskCard
-                key={t.id}
-                task={t}
-                handleDeleteTaskClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-                detailsDispatch={detailsDispatch}
-              />
+              <TaskCard key={t.id} task={t} onDelete={handleDeleteTaskClick} />
             ))}
           </div>
         )}
