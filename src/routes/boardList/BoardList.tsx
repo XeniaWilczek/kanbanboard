@@ -85,15 +85,17 @@ export default function BoardList() {
                     </Button>
                   }
                 />
-                <DialogClose>
-                  <Button
-                    variant="cyan"
-                    type="submit"
-                    onClick={handleCreateBoardClick}
-                  >
-                    Erstellen
-                  </Button>
-                </DialogClose>
+                <DialogClose
+                  render={
+                    <Button
+                      variant="cyan"
+                      type="submit"
+                      onClick={handleCreateBoardClick}
+                    >
+                      Erstellen
+                    </Button>
+                  }
+                ></DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -8,5 +8,7 @@ export interface Task {
   id: string;
   title: string;
   status: "ToDo" | "InProgress" | "Done";
-  description: string;
+  description?: string;
+  responsibility: string;
+  deadline?: Date;
 }

@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
-import type { Board, Task } from "@/types/card.types";
+import type { Task } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState, type Dispatch } from "react";
 import type { DetailAction } from "@/hooks/useDetailReducer";
@@ -48,8 +48,12 @@ export default function StatusCard({
 }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [responsibility, setResponsibility] = useState("none");
-
+  const [description, setDescription] = useState("");
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [deadline, setDeadline] = useState(new Date());
+  const hasPassed = deadline
+    ? deadline.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
+    : false;
 
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();
@@ -75,11 +79,11 @@ export default function StatusCard({
     }
   }
 
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+  function handleDragLeave(_e: React.DragEvent<HTMLDivElement>) {
     setIsDraggingOver(false);
   }
 
-  function handleDragEnter(e: React.DragEvent<HTMLDivElement>) {
+  function handleDragEnter(_e: React.DragEvent<HTMLDivElement>) {
     setIsDraggingOver(true);
   }
 
@@ -100,12 +104,14 @@ export default function StatusCard({
   }
   function handleCreateTaskClick() {
     if (!newTaskTitle.trim()) return;
-    //Task-Type bekommt zwei weitere EIgenschaften: responsibility und deadline
+
     const taskCard: Task = {
       id: String(Math.random()),
       title: newTaskTitle,
       status: title as "ToDo" | "InProgress" | "Done",
-      description: "",
+      description: description,
+      responsibility: responsibility,
+      deadline: deadline,
     };
 
     detailsDispatch({
@@ -113,6 +119,9 @@ export default function StatusCard({
       payload: { task: taskCard },
     });
     setNewTaskTitle("");
+    setDescription("");
+    setResponsibility("none");
+    setDeadline(new Date());
   }
 
   function handleDeleteTaskClick() {}
@@ -176,8 +185,8 @@ export default function StatusCard({
                     id="task-description"
                     name="task-description"
                     placeholder="Was soll erledigt werden?"
-                    //value={newTaskDescription}
-                    //onChange={(e) => setNewTaskDescription(e.target.value)}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     className="placeholder:font-normal text-base"
                   />
                 </Field>
@@ -189,9 +198,11 @@ export default function StatusCard({
                     Zugewiesen an:
                   </Label>
                   <Select
-                  //useState hinzufügen
-                  // onValueChange={(value) => setResponsibility(value)}
-                  //value={responsibility}
+                    //Typabsicherung bei Select-Komponente
+                    onValueChange={(value: string | null) =>
+                      setResponsibility(value ?? "")
+                    }
+                    value={responsibility}
                   >
                     <SelectTrigger
                       id="task-responsibility"
@@ -199,16 +210,13 @@ export default function StatusCard({
                     >
                       <SelectValue />
                     </SelectTrigger>
-
                     <SelectContent>
                       <SelectItem value="none">---</SelectItem>
-                      <SelectItem value="Person 1">Person 1</SelectItem>
-                      <SelectItem value="Person 2">Person 2</SelectItem>
-                      <SelectItem value="Person 2">Person 3</SelectItem>
+                      <SelectItem value="Niemand">Niemand</SelectItem>
+                      <SelectItem value="Nutzer">Nutzer</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
-
                 <Field>
                   <FieldLabel
                     htmlFor="task-deadline"
@@ -221,14 +229,16 @@ export default function StatusCard({
                       render={
                         <Button
                           variant="outline"
-                          data-empty={!new Date()}
+                          data-empty={!deadline}
                           className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
                         />
                       }
                     >
-                      <CalendarIcon />
-                      {new Date() ? (
-                        format(new Date(), "dd.MM.yyyy")
+                      <CalendarIcon
+                        className={`mr-2 h-4 w-4 ${hasPassed ? "text-destructive" : ""}`}
+                      />
+                      {deadline ? (
+                        format(deadline, "dd.MM.yyyy")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -236,8 +246,12 @@ export default function StatusCard({
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
-                        selected={new Date()}
-                        //onSelect={}
+                        selected={deadline}
+                        onSelect={(date) => {
+                          if (date) {
+                            setDeadline(date);
+                          }
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -250,15 +264,17 @@ export default function StatusCard({
                       </Button>
                     }
                   />
-                  <DialogClose>
-                    <Button
-                      variant="cyan"
-                      type="submit"
-                      onClick={handleCreateTaskClick}
-                    >
-                      Erstellen
-                    </Button>
-                  </DialogClose>
+                  <DialogClose
+                    render={
+                      <Button
+                        variant="cyan"
+                        type="submit"
+                        onClick={handleCreateTaskClick}
+                      >
+                        Erstellen
+                      </Button>
+                    }
+                  />
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -280,12 +296,7 @@ export default function StatusCard({
                 handleDeleteTaskClick={function (): void {
                   throw new Error("Function not implemented.");
                 }}
-                detailDispatch={{
-                  type: "UPDATE_TITLE",
-                  payload: {
-                    title: "",
-                  },
-                }}
+                detailsDispatch={detailsDispatch}
               />
             ))}
           </div>

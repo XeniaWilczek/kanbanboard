@@ -9,15 +9,17 @@ import { Button } from "../ui/button";
 import { Calendar, CircleUser, GripVertical, Trash2 } from "lucide-react";
 import type { Task } from "@/types/card.types";
 import type { DetailAction } from "@/hooks/useDetailReducer";
+import { format } from "date-fns";
+import type { Dispatch } from "react";
 
 export default function TaskCard({
   task,
   handleDeleteTaskClick,
-  detailDispatch,
+  detailsDispatch,
 }: {
   task: Task;
   handleDeleteTaskClick: () => void;
-  detailDispatch: DetailAction;
+  detailsDispatch: Dispatch<DetailAction>;
 }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(`status-${task.status}`, "");
@@ -51,11 +53,19 @@ export default function TaskCard({
         <p className="text-xs">{task.description}</p>
         <div className="flex gap-4 justify-center items-center">
           <CircleUser className="size-3"></CircleUser>
-          <p className="text-xs">Nutzer</p>
+          <p className="text-xs">
+            {task.responsibility && task.responsibility !== "none"
+              ? task.responsibility
+              : "Niemand"}
+          </p>
         </div>
         <div className="flex justify-center items-center gap-2">
           <Calendar className="size-3"></Calendar>
-          <p className="text-xs">Frist</p>
+          <p className="text-xs">
+            {task.deadline
+              ? format(new Date(task.deadline), "dd.MM.yyyy")
+              : "Keine Frist"}
+          </p>
         </div>
       </CardContent>
     </Card>
