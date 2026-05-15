@@ -36,6 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
+import TaskDialog from "../TaskDialog/TaskDialog";
 
 export default function StatusCard({
   title,
@@ -54,7 +55,8 @@ export default function StatusCard({
   const hasPassed = deadline
     ? deadline.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
     : false;
-
+  const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
+  const [editTask, setEditTask] = useState<Task | undefined>();
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();
   }
@@ -128,180 +130,208 @@ export default function StatusCard({
     detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
   }
 
+  function handleEditTaskClick(task: Task) {
+    setEditTask(task);
+    setIsEditTaskOpen(true);
+  }
+  function handleUpdateTaskSubmit(updatedTask: Task) {
+    detailsDispatch({
+      type: "UPDATE_TASK",
+      payload: { task: updatedTask },
+    });
+    setIsEditTaskOpen(false);
+    setEditTask(undefined);
+  }
   return (
-    <Card
-      className={`w-full h-auto bg-gray-50 ${isDraggingOver ? "border border-dashed border-cyan-400 rounded-md" : ""}`}
-      onDragOver={handleDraggingOver}
-      onDragLeave={handleDragLeave}
-      onDragEnter={handleDragEnter}
-      onDrop={handleDrop}
-    >
-      <CardHeader className="border-b rounded-b-none border-black">
-        <CardTitle className="w-full flex justify-between items-center">
-          <div className="flex justify-start items-center gap-1">
-            <span>{title}</span>
-            <CardDescription className="font-normal">
-              ({tasks.length})
-            </CardDescription>
-          </div>
-          <CardAction>
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button variant="iconGhost" size="icon">
-                    <Plus className="size-5 stroke-[2.5]" />
-                  </Button>
-                }
-              ></DialogTrigger>
-              <DialogContent className="sm:max-w-sm">
-                <DialogHeader>
-                  <DialogTitle className="text-base font-semibold">
-                    Neuen Task erstellen:
-                  </DialogTitle>
-                  <DialogDescription className="text-xs">
-                    Erstelle eine neue Aufgabe für diese Spalte.
-                  </DialogDescription>
-                </DialogHeader>
-                <Field>
-                  <Label htmlFor="taskname" className="text-sm font-semibold">
-                    Taskname:
-                  </Label>
-                  <Input
-                    id="taskname"
-                    name="taskname"
-                    placeholder="Tasknamen erstellen"
-                    type="text"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="placeholder: font-normal text-base"
-                  />
-                </Field>
-                <Field>
-                  <Label
-                    htmlFor="task-description"
-                    className="text-sm font-semibold"
-                  >
-                    Beschreibung:
-                  </Label>
-                  <Textarea
-                    id="task-description"
-                    name="task-description"
-                    placeholder="Was soll erledigt werden?"
-                    className="placeholder:font-normal text-base"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </Field>
-                <Field>
-                  <Label
-                    htmlFor="task-responsibility"
-                    className="text-sm font-semibold"
-                  >
-                    Zugewiesen an:
-                  </Label>
-                  <Select
-                    value={responsibility}
-                    //Typabsicherung bei Select-Komponente
-                    onValueChange={(value: string | null) =>
-                      setResponsibility(value ?? "")
-                    }
-                  >
-                    <SelectTrigger
-                      id="task-responsibility"
-                      name="task-responsibility"
+    <>
+      <Card
+        className={`w-full h-auto bg-gray-50 ${isDraggingOver ? "border border-dashed border-cyan-400 rounded-md" : ""}`}
+        onDragOver={handleDraggingOver}
+        onDragLeave={handleDragLeave}
+        onDragEnter={handleDragEnter}
+        onDrop={handleDrop}
+      >
+        <CardHeader className="border-b rounded-b-none border-black">
+          <CardTitle className="w-full flex justify-between items-center">
+            <div className="flex justify-start items-center gap-1">
+              <span>{title}</span>
+              <CardDescription className="font-normal">
+                ({tasks.length})
+              </CardDescription>
+            </div>
+            <CardAction>
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button variant="iconGhost" size="icon">
+                      <Plus className="size-5 stroke-[2.5]" />
+                    </Button>
+                  }
+                ></DialogTrigger>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle className="text-base font-semibold">
+                      Neuen Task erstellen:
+                    </DialogTitle>
+                    <DialogDescription className="text-xs">
+                      Erstelle eine neue Aufgabe für diese Spalte.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Field>
+                    <Label htmlFor="taskname" className="text-sm font-semibold">
+                      Taskname:
+                    </Label>
+                    <Input
+                      id="taskname"
+                      name="taskname"
+                      placeholder="Tasknamen erstellen"
+                      type="text"
+                      value={newTaskTitle}
+                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                      className="placeholder: font-normal text-base"
+                    />
+                  </Field>
+                  <Field>
+                    <Label
+                      htmlFor="task-description"
+                      className="text-sm font-semibold"
                     >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">---</SelectItem>
-                      <SelectItem value="Niemand">Niemand</SelectItem>
-                      <SelectItem value="Nutzer">Nutzer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel
-                    htmlFor="task-deadline"
-                    className="text-sm font-semibold"
-                  >
-                    Deadline:
-                  </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger
-                      render={
-                        <Button
-                          variant="outline"
-                          data-empty={!deadline}
-                          className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
-                        />
+                      Beschreibung:
+                    </Label>
+                    <Textarea
+                      id="task-description"
+                      name="task-description"
+                      placeholder="Was soll erledigt werden?"
+                      className="placeholder:font-normal text-base"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </Field>
+                  <Field>
+                    <Label
+                      htmlFor="task-responsibility"
+                      className="text-sm font-semibold"
+                    >
+                      Zugewiesen an:
+                    </Label>
+                    <Select
+                      value={responsibility}
+                      //Typabsicherung bei Select-Komponente
+                      onValueChange={(value: string | null) =>
+                        setResponsibility(value ?? "")
                       }
                     >
-                      <CalendarIcon
-                        className={`mr-2 h-4 w-4 ${hasPassed ? "text-destructive" : ""}`}
-                      />
-                      {deadline ? (
-                        format(deadline, "dd.MM.yyyy")
-                      ) : (
-                        <span>Wähle ein Datum aus.</span>
-                      )}
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={deadline}
-                        onSelect={(date) => {
-                          if (date) {
-                            setDeadline(date);
-                          }
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </Field>
-                <DialogFooter>
-                  <DialogClose
-                    render={
-                      <Button variant="outline" className="hover:bg-cyan-50">
-                        Abbrechen
-                      </Button>
-                    }
-                  />
-                  <DialogClose
-                    render={
-                      <Button
-                        variant="cyan"
-                        type="submit"
-                        onClick={handleCreateTaskClick}
+                      <SelectTrigger
+                        id="task-responsibility"
+                        name="task-responsibility"
                       >
-                        Erstellen
-                      </Button>
-                    }
-                  />
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </CardAction>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-6 flex flex-col gap-3">
-        {tasks.length === 0 && !isDraggingOver && (
-          <div className="text-sm text-gray-400 text-center py-6 font-medium">
-            Keine Tasks vorhanden.
-          </div>
-        )}
-        {tasks.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {tasks.map((t) => (
-              <TaskCard key={t.id} task={t} onDelete={handleDeleteTaskClick} />
-            ))}
-          </div>
-        )}
-        {isDraggingOver && (
-          <div className="w-full h-20 flex items-center justify-center text-sm font-semibold text-cyan-400 border border-dashed border-cyan-400 rounded-md bg-cyan-100/70 animate-pulse">
-            Hier ablegen
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">---</SelectItem>
+                        <SelectItem value="Niemand">Niemand</SelectItem>
+                        <SelectItem value="Nutzer">Nutzer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field>
+                    <FieldLabel
+                      htmlFor="task-deadline"
+                      className="text-sm font-semibold"
+                    >
+                      Deadline:
+                    </FieldLabel>
+                    <Popover>
+                      <PopoverTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            data-empty={!deadline}
+                            className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
+                          />
+                        }
+                      >
+                        <CalendarIcon
+                          className={`mr-2 h-4 w-4 ${hasPassed ? "text-destructive" : ""}`}
+                        />
+                        {deadline ? (
+                          format(deadline, "dd.MM.yyyy")
+                        ) : (
+                          <span>Wähle ein Datum aus.</span>
+                        )}
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={deadline}
+                          onSelect={(date) => {
+                            if (date) {
+                              setDeadline(date);
+                            }
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </Field>
+                  <DialogFooter>
+                    <DialogClose
+                      render={
+                        <Button variant="outline" className="hover:bg-cyan-50">
+                          Abbrechen
+                        </Button>
+                      }
+                    />
+                    <DialogClose
+                      render={
+                        <Button
+                          variant="cyan"
+                          type="submit"
+                          onClick={handleCreateTaskClick}
+                        >
+                          Erstellen
+                        </Button>
+                      }
+                    />
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardAction>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6 flex flex-col gap-3">
+          {tasks.length === 0 && !isDraggingOver && (
+            <div className="text-sm text-gray-400 text-center py-6 font-medium">
+              Keine Tasks vorhanden.
+            </div>
+          )}
+          {tasks.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {tasks.map((t) => (
+                <TaskCard
+                  key={t.id}
+                  task={t}
+                  onDelete={handleDeleteTaskClick}
+                  onEdit={handleEditTaskClick}
+                />
+              ))}
+            </div>
+          )}
+          {isDraggingOver && (
+            <div className="w-full h-20 flex items-center justify-center text-sm font-semibold text-cyan-400 border border-dashed border-cyan-400 rounded-md bg-cyan-100/70 animate-pulse">
+              Hier ablegen
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      {editTask ? (
+        <TaskDialog
+          key={editTask.id ?? String(Math.random())}
+          task={editTask}
+          open={isEditTaskOpen}
+          handleOpenChange={setIsEditTaskOpen}
+          handleUpdateTaskSubmit={handleUpdateTaskSubmit}
+        />
+      ) : null}
+    </>
   );
 }

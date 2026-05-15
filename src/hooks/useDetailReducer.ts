@@ -6,7 +6,8 @@ export type DetailState = Board;
 export type DetailAction =
   | { type: "UPDATE_TITLE"; payload: { title: string } }
   | { type: "CREATE_TASK"; payload: { task: Task } }
-  | { type: "DELETE_TASK"; payload: { taskId: string } };
+  | { type: "DELETE_TASK"; payload: { taskId: string } }
+  | { type: "UPDATE_TASK"; payload: { task: Task } };
 
 export function useDetailReducer(
   state: DetailState,
@@ -32,6 +33,17 @@ export function useDetailReducer(
       newDetailState = {
         ...state,
         tasks: state.tasks.filter((t) => t.id !== action.payload.taskId),
+      };
+      break;
+    }
+
+    case "UPDATE_TASK": {
+      const updatedTask = action.payload.task;
+      newDetailState = {
+        ...state,
+        tasks: state.tasks.map((t) =>
+          t.id === updatedTask.id ? updatedTask : t,
+        ),
       };
       break;
     }

@@ -13,9 +13,11 @@ import { format } from "date-fns";
 export default function TaskCard({
   task,
   onDelete,
+  onEdit,
 }: {
   task: Task;
   onDelete: (id: string) => void;
+  onEdit: (task: Task) => void;
 }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(`status-${task.status}`, "");
@@ -23,7 +25,7 @@ export default function TaskCard({
 
   return (
     <Card
-      className="task-card mx-4 p-4 flex-col gap-0.5 h-32"
+      className="task-card mx-4 p-4 flex flex-col gap-0.5 h-32"
       draggable={true}
       onDragStart={handleDragStart}
     >
@@ -31,7 +33,7 @@ export default function TaskCard({
         <CardTitle className="w-full flex justify-between items-center hover:underline hover:cursor-pointer">
           <div className="flex justify-start items-center gap-4">
             <GripVertical className="size-4 text-muted-foreground hover:cursor-pointer"></GripVertical>
-            {task.title}
+            <span onClick={() => onEdit(task)}>{task.title}</span>
           </div>
           <CardAction>
             <Button
