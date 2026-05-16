@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import type { Task } from "@/types/card.types";
+import { isBefore, startOfDay } from "date-fns";
 
 export default function TaskDialog({
   task,
@@ -48,7 +49,7 @@ export default function TaskDialog({
     task.deadline ? new Date(task.deadline) : new Date(),
   );
   const hasPassed = deadline
-    ? deadline.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
+    ? isBefore(startOfDay(deadline), startOfDay(new Date()))
     : false;
 
   return (

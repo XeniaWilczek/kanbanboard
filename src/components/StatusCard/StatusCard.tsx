@@ -37,6 +37,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
+import { isBefore, startOfDay } from "date-fns";
 
 export default function StatusCard({
   title,
@@ -53,7 +54,7 @@ export default function StatusCard({
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState(new Date());
   const hasPassed = deadline
-    ? deadline.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
+    ? isBefore(startOfDay(deadline), startOfDay(new Date()))
     : false;
   const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | undefined>();
@@ -93,7 +94,6 @@ export default function StatusCard({
     const statusType = e.dataTransfer.types.find((type) =>
       type.startsWith("status-"),
     );
-    console.log(statusType);
     if (!statusType) return;
 
     const taskStatus = statusType.replace("status-", "");

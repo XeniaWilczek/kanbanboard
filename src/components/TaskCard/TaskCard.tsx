@@ -25,7 +25,7 @@ export default function TaskCard({
 
   return (
     <Card
-      className="task-card mx-4 p-4 flex flex-col gap-0.5 h-32"
+      className="task-card mx-4 p-4 flex flex-col gap-0.5 h-auto min-h-32"
       draggable={true}
       onDragStart={handleDragStart}
     >
