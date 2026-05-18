@@ -64,7 +64,6 @@ export default function StatusCard({
 
   function handleDraggingOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-
     //Es wird nach dem key gesucht, statt nach dem Value
     const statusType = e.dataTransfer.types.find((type) =>
       type.startsWith("status-"),
@@ -73,7 +72,6 @@ export default function StatusCard({
     if (!statusType) return;
 
     const taskStatus = statusType.replace("status-", "");
-    console.log(statusType);
 
     if (isTaskInTasks(taskStatus)) {
       setIsDraggingOver(false);
@@ -86,24 +84,29 @@ export default function StatusCard({
     setIsDraggingOver(false);
   }
 
-  function handleDragEnter(_e: React.DragEvent<HTMLDivElement>) {
-    setIsDraggingOver(true);
-  }
-
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setIsDraggingOver(false);
+
     const statusType = e.dataTransfer.types.find((type) =>
       type.startsWith("status-"),
     );
-    if (!statusType) return;
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!statusType || !taskId) return;
 
     const taskStatus = statusType.replace("status-", "");
-    console.log(statusType);
-    if (isTaskInTasks(taskStatus)) {
-      setIsDraggingOver(false);
-    } else {
-      //Funktion zum Ablegen eines Tasks in anderer Spalte hinzufügen
-    }
+
+    if (taskStatus === title.toLowerCase()) return;
+
+    detailsDispatch({
+      type: "UPDATE_TASK_STATUS",
+      payload: {
+        taskId: taskId,
+        newStatus: title as "ToDo" | "InProgress" | "Done",
+      },
+    });
   }
+
   function handleCreateTaskClick() {
     if (!newTaskTitle.trim()) return;
 
@@ -148,7 +151,6 @@ export default function StatusCard({
         className={`w-full h-auto bg-gray-50 ${isDraggingOver ? "border border-dashed border-cyan-400 rounded-md" : ""}`}
         onDragOver={handleDraggingOver}
         onDragLeave={handleDragLeave}
-        onDragEnter={handleDragEnter}
         onDrop={handleDrop}
       >
         <CardHeader className="border-b rounded-b-none border-black">

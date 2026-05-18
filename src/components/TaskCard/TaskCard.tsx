@@ -20,7 +20,8 @@ export default function TaskCard({
   onEdit: (task: Task) => void;
 }) {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.setData(`status-${task.status}`, "");
+    e.dataTransfer.setData("text/plain", task.id);
+    e.dataTransfer.setData(`status-${task.status}`.toLowerCase(), "");
   };
 
   return (

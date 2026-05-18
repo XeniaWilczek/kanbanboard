@@ -7,7 +7,11 @@ export type DetailAction =
   | { type: "UPDATE_TITLE"; payload: { title: string } }
   | { type: "CREATE_TASK"; payload: { task: Task } }
   | { type: "DELETE_TASK"; payload: { taskId: string } }
-  | { type: "UPDATE_TASK"; payload: { task: Task } };
+  | { type: "UPDATE_TASK"; payload: { task: Task } }
+  | {
+      type: "UPDATE_TASK_STATUS";
+      payload: { taskId: string; newStatus: "ToDo" | "InProgress" | "Done" };
+    };
 
 export function useDetailReducer(
   state: DetailState,
@@ -47,7 +51,16 @@ export function useDetailReducer(
       };
       break;
     }
-
+    case "UPDATE_TASK_STATUS": {
+      const { taskId, newStatus } = action.payload;
+      newDetailState = {
+        ...state,
+        tasks: state.tasks.map((t) =>
+          t.id === taskId ? { ...t, status: newStatus } : t,
+        ),
+      };
+      break;
+    }
     default: {
       break;
     }
