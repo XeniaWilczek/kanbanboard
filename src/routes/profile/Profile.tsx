@@ -11,9 +11,21 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useUsernameContext } from "@/types/context/usernameContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const [userName, setUserName] = useState("");
+  const context = useUsernameContext();
+  const [username, setUsername] = useState(context.username);
+  const navigate = useNavigate();
+
+  function handleProfileSubmit() {
+    //Speichern im Context und im LocalStorage
+    context.setUsername(username);
+    localStorage.setItem("username", username);
+    navigate("/");
+  }
+
   return (
     <div className="profile-container w-[30vw] h-auto mx-auto pt-6">
       <h1 className="text-2xl font-bold text-left mb-4 ">Profil</h1>
@@ -36,13 +48,16 @@ export default function Profile() {
               id="username-input"
               type="text"
               placeholder="Nutzernamen eingeben"
-              value={userName}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </Field>
         </CardContent>
         <CardFooter>
           <CardAction>
-            <Button variant="cyan">Speichern</Button>
+            <Button variant="cyan" onClick={handleProfileSubmit}>
+              Speichern
+            </Button>
           </CardAction>
         </CardFooter>
       </Card>

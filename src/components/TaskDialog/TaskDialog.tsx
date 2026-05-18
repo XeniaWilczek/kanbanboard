@@ -26,6 +26,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import type { Task } from "@/types/card.types";
 import { isBefore, startOfDay } from "date-fns";
+import { useUsernameContext } from "@/types/context/usernameContext";
 
 export default function TaskDialog({
   task,
@@ -38,6 +39,7 @@ export default function TaskDialog({
   handleOpenChange: (open: boolean) => void;
   handleUpdateTaskSubmit: (updatedTask: Task) => void;
 }) {
+  const { username } = useUsernameContext();
   const [newTaskTitle, setNewTaskTitle] = useState<string>(task.title);
   const [responsibility, setResponsibility] = useState<string>(
     task.responsibility ?? "none",
@@ -108,9 +110,8 @@ export default function TaskDialog({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">---</SelectItem>
-              <SelectItem value="Niemand">Niemand</SelectItem>
-              <SelectItem value="Nutzer">Nutzer</SelectItem>
+              <SelectItem value="none">keine Zuweisung</SelectItem>
+              {username && <SelectItem value={username}>{username}</SelectItem>}
             </SelectContent>
           </Select>
         </Field>

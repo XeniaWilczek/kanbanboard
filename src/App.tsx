@@ -4,6 +4,7 @@ import ErrorPage from "./routes/errorPage";
 import Root from "./routes/root/Root";
 import BoardList from "./routes/boardList/BoardList";
 import DetailView from "./routes/DetailView/DetailView";
+import { UsernameProvider } from "./types/context/usernameContext";
 
 function App() {
   const router = createBrowserRouter(
@@ -32,8 +33,11 @@ function App() {
       basename: "/kanbanboard",
     },
   );
-
-  return <RouterProvider router={router} />;
+  return (
+    <UsernameProvider>
+      <RouterProvider router={router} />
+    </UsernameProvider>
+  );
 }
 
 export default App;

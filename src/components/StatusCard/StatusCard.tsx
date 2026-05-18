@@ -38,6 +38,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
+import { useUsernameContext } from "@/types/context/usernameContext";
 
 export default function StatusCard({
   title,
@@ -48,9 +49,10 @@ export default function StatusCard({
   tasks: Task[];
   detailsDispatch: Dispatch<DetailAction>;
 }) {
+  const { username } = useUsernameContext();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [responsibility, setResponsibility] = useState("none");
+  const [responsibility, setResponsibility] = useState(username || "none");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState(new Date());
   const hasPassed = deadline
@@ -125,7 +127,7 @@ export default function StatusCard({
     });
     setNewTaskTitle("");
     setDescription("");
-    setResponsibility("none");
+    setResponsibility(username || "none");
     setDeadline(new Date());
   }
 
@@ -218,7 +220,7 @@ export default function StatusCard({
                     </Label>
                     <Select
                       value={responsibility}
-                      //Typabsicherung bei Select-Komponente
+                      // Typabsicherung bei Select-Komponente
                       onValueChange={(value: string | null) =>
                         setResponsibility(value ?? "")
                       }
@@ -230,9 +232,10 @@ export default function StatusCard({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">---</SelectItem>
-                        <SelectItem value="Niemand">Niemand</SelectItem>
-                        <SelectItem value="Nutzer">Nutzer</SelectItem>
+                        <SelectItem value="none">keine Zuweisung</SelectItem>
+                        {username && (
+                          <SelectItem value={username}>{username}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </Field>
