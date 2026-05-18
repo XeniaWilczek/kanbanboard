@@ -9,6 +9,6 @@ export interface Task {
   title: string;
   status: "ToDo" | "InProgress" | "Done";
   description?: string;
-  responsibility: string;
+  responsibility?: string;
   deadline?: Date;
 }

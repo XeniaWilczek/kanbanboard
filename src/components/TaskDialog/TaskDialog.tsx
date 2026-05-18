@@ -110,7 +110,7 @@ export default function TaskDialog({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">keine Zuweisung</SelectItem>
+              <SelectItem value="none">Niemand</SelectItem>
               {username && <SelectItem value={username}>{username}</SelectItem>}
             </SelectContent>
           </Select>
