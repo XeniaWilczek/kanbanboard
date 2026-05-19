@@ -38,7 +38,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
-import { useUsernameContext } from "@/types/context/usernameContext";
+import { useUsernameContext } from "@/context/usernameContext";
 
 export default function StatusCard({
   title,

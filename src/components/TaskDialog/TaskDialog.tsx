@@ -26,7 +26,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import type { Task } from "@/types/card.types";
 import { isBefore, startOfDay } from "date-fns";
-import { useUsernameContext } from "@/types/context/usernameContext";
+import { useUsernameContext } from "@/context/usernameContext";
 
 export default function TaskDialog({
   task,

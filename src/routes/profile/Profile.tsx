@@ -11,7 +11,7 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useUsernameContext } from "@/types/context/usernameContext";
+import { useUsernameContext } from "@/context/usernameContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
