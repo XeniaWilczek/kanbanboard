@@ -1,8 +1,14 @@
-export interface Board {
+import type { Database } from "./database.types";
+
+export interface BoardLocalStorage {
   id: string;
   title: string;
   tasks: Task[];
 }
+
+export type Board = Database["public"]["Tables"]["boards"]["Row"] & {
+  tasks: Database["public"]["Tables"]["tasks"]["Row"][];
+};
 
 export interface Task {
   id: string;

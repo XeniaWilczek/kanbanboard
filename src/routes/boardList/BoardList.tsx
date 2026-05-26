@@ -14,14 +14,22 @@ import {
 import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { getBoards } from "@/lib/api";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
 
 export default function BoardList() {
-  const [boards, boardsDispatch] = useReducer(useBoardReducer, [], getBoards);
+  const [boards, boardsDispatch] = useReducer(useBoardReducer, []);
   const [newBoardTitle, setNewBoardTitle] = useState("");
+
+  useEffect(() => {
+    async function loadData() {
+      const fetchedBoards = await getBoards();
+      boardsDispatch({ type: "SET_BOARDS", payload: fetchedBoards });
+    }
+    loadData();
+  }, []);
 
   function handleCreateBoardClick() {
     if (newBoardTitle.trim().length === 0) return;
@@ -31,7 +39,7 @@ export default function BoardList() {
       title: newBoardTitle,
       tasks: [],
     };
-    boardsDispatch({ type: "CREATE_BOARD", payload: newBoard });
+    boardsDispatch({ type: "SET_BOARD", payload: boards });
     setNewBoardTitle("");
   }
 

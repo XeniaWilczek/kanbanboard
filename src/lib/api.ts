@@ -1,6 +1,21 @@
 import type { Board } from "@/types/card.types";
+import supabase from "./supabaseConnection";
 //Funktionen für Board-Liste
-export function getBoards(): Board[] {
+export async function getBoards(): Promise<Board[]> {
+  const { data: boards, error } = await supabase
+    .from("boards")
+    .select("*, tasks(*)");
+
+  if (error) {
+    console.error("Error fetching boards:", error);
+    return [];
+  }
+
+  return boards as unknown as Board[];
+}
+
+//Funktion kopiert für Arbeit mit LocalStorage
+export function getBoardsFromLocalStorage(): Board[] {
   const stringifiedBoards = localStorage.getItem("boards") || "[]";
   return JSON.parse(stringifiedBoards);
 }
