@@ -18,17 +18,17 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          title: string | null
+          title: string
         }
         Insert: {
           created_at?: string
           id?: string
-          title?: string | null
+          title: string
         }
         Update: {
           created_at?: string
           id?: string
-          title?: string | null
+          title?: string
         }
         Relationships: []
       }
@@ -65,9 +65,9 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "Tasks_boardId_fkey"
+            foreignKeyName: "tasks_boardId_fkey"
             columns: ["boardId"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "boards"
             referencedColumns: ["id"]
           },

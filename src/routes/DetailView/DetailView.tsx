@@ -2,27 +2,25 @@ import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDetailReducer } from "@/hooks/useDetailReducer";
-import { getBoard } from "@/lib/api";
-import type { Board } from "@/types/card.types";
+import { getBoardById } from "@/lib/api";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 export default function DetailView() {
   const { id } = useParams<{ id: string }>();
-  const requiredBoard: Board = getBoard(id || "") || {
-    id: id || "",
-    title: "Standard-Board",
-    tasks: [],
-  };
-
-  const [details, detailsDispatch] = useReducer(
-    useDetailReducer,
-    requiredBoard,
-  );
+  const [board, dispatchBoard] = useReducer(useDetailReducer, undefined);
 
   const [edit, setEdit] = useState(false);
   const [boardTitle, setBoardTitle] = useState("");
+
+  async function fetchBoard() {
+    const board = await getBoardById(id ?? "");
+    dispatchBoard({ type: "SET_BOARD", payload: board });
+  }
+  useEffect(() => {
+    fetchBoard();
+  }, []);
 
   function handleSaveTitleClick() {
     detailsDispatch({
@@ -65,10 +63,10 @@ export default function DetailView() {
     } else {
       return (
         <>
-          <h1 className="text-2xl font-bold">{details.title}</h1>
+          <h1 className="text-2xl font-bold">{board.title}</h1>
           <Button
             onClick={() => {
-              setBoardTitle(details.title);
+              setBoardTitle(board.title);
               setEdit(true);
             }}
             variant="iconGhost"
@@ -80,7 +78,9 @@ export default function DetailView() {
       );
     }
   }
-
+  if (!board) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="details w-[80vw] h-auto mx-auto p-6 flex flex-col gap-4">
       <div className="details-heading-and-buttons w-fit flex justify-start items-center gap-2">
@@ -94,18 +94,24 @@ export default function DetailView() {
       <div className="flex gap-4">
         <StatusCard
           title={"ToDo"}
-          tasks={details.tasks.filter((t) => t.status === "ToDo")}
-          detailsDispatch={detailsDispatch}
+          tasks={board.tasks.filter(
+            (t: { status: string }) => t.status === "ToDo",
+          )}
+          detailsDispatch={dispatchBoard}
         ></StatusCard>
         <StatusCard
           title={"InProgress"}
-          tasks={details.tasks.filter((t) => t.status === "InProgress")}
-          detailsDispatch={detailsDispatch}
+          tasks={board.tasks.filter(
+            (t: { status: string }) => t.status === "InProgress",
+          )}
+          detailsDispatch={dispatchBoard}
         ></StatusCard>
         <StatusCard
           title={"Done"}
-          tasks={details.tasks.filter((t) => t.status === "Done")}
-          detailsDispatch={detailsDispatch}
+          tasks={board.tasks.filter(
+            (t: { status: string }) => t.status === "Done",
+          )}
+          detailsDispatch={dispatchBoard}
         ></StatusCard>
       </div>
     </div>

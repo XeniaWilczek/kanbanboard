@@ -1,9 +1,10 @@
 import { saveBoard } from "@/lib/api";
 import type { Board, Task } from "@/types/card.types";
 
-export type DetailState = Board;
+export type DetailState = Board | undefined;
 
 export type DetailAction =
+  | { type: "SET_BOARD"; payload: Board | undefined }
   | { type: "UPDATE_TITLE"; payload: { title: string } }
   | { type: "CREATE_TASK"; payload: { task: Task } }
   | { type: "DELETE_TASK"; payload: { taskId: string } }
@@ -17,13 +18,24 @@ export function useDetailReducer(
   state: DetailState,
   action: DetailAction,
 ): DetailState {
-  let newDetailState = state;
-
+  let newState = state;
   switch (action.type) {
-    case "UPDATE_TITLE": {
-      newDetailState = { ...state, title: action.payload.title };
+    case "SET_BOARD": {
+      newState= action.payload; 
       break;
+      
     }
+
+    case "UPDATE_TITLE": {
+      if (!state) return state; 
+      return { ...state, title: action.payload.title };
+    }
+
+    default: {
+      return state;
+    }
+  }
+}
 
     case "CREATE_TASK": {
       newDetailState = {

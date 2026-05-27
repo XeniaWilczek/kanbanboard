@@ -15,7 +15,7 @@ import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useEffect, useReducer, useState } from "react";
-import { getBoards } from "@/lib/api";
+import { deleteBoard, getBoards, insertBoard } from "@/lib/api";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
 
@@ -31,20 +31,31 @@ export default function BoardList() {
     loadData();
   }, []);
 
-  function handleCreateBoardClick() {
+  async function handleCreateBoardClick() {
     if (newBoardTitle.trim().length === 0) return;
 
-    const newBoard: Board = {
-      id: String(Math.random()),
+    const newBoard = {
+      id: "",
       title: newBoardTitle,
+      created_at: new Date().toISOString(),
       tasks: [],
-    };
-    boardsDispatch({ type: "SET_BOARD", payload: boards });
-    setNewBoardTitle("");
+    } as Board;
+
+    const insertedBoard = await insertBoard(newBoard);
+
+    if (insertedBoard) {
+      boardsDispatch({ type: "CREATE_BOARD", payload: insertedBoard as Board });
+      setNewBoardTitle("");
+    }
   }
 
-  function handleDeleteBoardClick(id: string) {
-    boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
+  async function handleDeleteBoardClick(id: string) {
+    try {
+      await deleteBoard(id);
+      boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
+    } catch (error) {
+      console.error("Error deleting board:", error);
+    }
   }
 
   return (

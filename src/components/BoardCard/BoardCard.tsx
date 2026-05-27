@@ -41,7 +41,7 @@ export default function BoardCard({
           <CardDescription className="flex items-center gap-0.5 col-span-full">
             <span>3 Spalten</span>
             <Dot className="stroke-1.5 size-4"></Dot>
-            <span>{board.tasks.length} Tasks</span>
+            <span>{board.tasks?.length || 0} Aufgaben</span>
           </CardDescription>
         </CardHeader>
       </Card>

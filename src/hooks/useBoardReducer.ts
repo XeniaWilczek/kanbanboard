@@ -5,18 +5,24 @@ export type BoardAction =
   | { type: "DELETE_BOARD"; payload: { id: string } }
   | { type: "SET_BOARDS"; payload: Board[] };
 
-export function useBoardReducer(state: Board[], action: BoardAction): Board[] {
+export function useBoardReducer(
+  state: Board[]
+  action: BoardAction,
+): Board[] {
   switch (action.type) {
     case "CREATE_BOARD": {
-      return [...state, action.payload];
+      const newState = [...state, action.payload];
+      return newState;
     }
 
     case "DELETE_BOARD": {
-      return state.filter((board) => board.id !== action.payload.id);
+      const newState = state.filter((board) => board.id !== action.payload.id);
+      return newState;
     }
 
     case "SET_BOARDS": {
-      return action.payload;
+      const newState = action.payload;
+      return newState;
     }
 
     default: {
