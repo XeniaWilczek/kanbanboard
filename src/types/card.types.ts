@@ -1,20 +1,14 @@
 import type { Database } from "./database.types";
 
-export interface BoardLocalStorage {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
-
 export type Board = Database["public"]["Tables"]["boards"]["Row"] & {
-  tasks: Database["public"]["Tables"]["tasks"]["Row"][];
+  tasks: Task[];
+};
+export type UpdateBoard = Database["public"]["Tables"]["boards"]["Update"];
+
+export type Task = Database["public"]["Tables"]["tasks"]["Row"] & {
+  status: "ToDo" | "InProgress" | "Done";
 };
 
-export interface Task {
-  id: string;
-  title: string;
-  status: "ToDo" | "InProgress" | "Done";
-  description?: string;
-  responsibility?: string;
-  deadline?: Date;
-}
+export type CreateTask = Database["public"]["Tables"]["tasks"]["Insert"];
+
+export type UpdateTask = Database["public"]["Tables"]["tasks"]["Update"];

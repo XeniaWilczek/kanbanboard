@@ -1,4 +1,10 @@
-import type { Board } from "@/types/card.types";
+import type {
+  Board,
+  CreateTask,
+  Task,
+  UpdateBoard,
+  UpdateTask,
+} from "@/types/card.types";
 import supabase from "./supabaseConnection";
 //Funktionen für Board-Liste
 
@@ -52,5 +58,55 @@ export async function getBoardById(id: string): Promise<Board | undefined> {
     console.error("Error fetching board by id:", error);
     return undefined;
   }
-  return board;
+  return board as Board;
+}
+
+export async function updateBoard(
+  id: string,
+  board: UpdateBoard,
+): Promise<Board | null> {
+  const { data, error } = await supabase
+    .from("boards")
+    .update(board)
+    .eq("id", id)
+    .select("*, tasks(*)")
+    .single();
+
+  if (error) {
+    console.error("Error updating boards:", error);
+    return null;
+  }
+  return data as Board;
+}
+export async function insertTask(task: CreateTask): Promise<Task | null> {
+  const { data, error } = await supabase
+    .from("tasks")
+    .insert(task)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error inserting tasks", error);
+    throw error;
+  }
+
+  return data as Task;
+}
+
+export async function updateTask(
+  id: string,
+  task: UpdateTask,
+): Promise<Task | null> {
+  const { data, error } = await supabase
+    .from("tasks")
+    .update(task)
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error updating task:", error);
+    throw error;
+  }
+  return data as Task;
 }

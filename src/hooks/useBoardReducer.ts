@@ -5,10 +5,7 @@ export type BoardAction =
   | { type: "DELETE_BOARD"; payload: { id: string } }
   | { type: "SET_BOARDS"; payload: Board[] };
 
-export function useBoardReducer(
-  state: Board[]
-  action: BoardAction,
-): Board[] {
+export function useBoardReducer(state: Board[], action: BoardAction): Board[] {
   switch (action.type) {
     case "CREATE_BOARD": {
       const newState = [...state, action.payload];

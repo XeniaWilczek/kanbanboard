@@ -24,7 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
-import type { Task } from "@/types/card.types";
+import type { Task, UpdateTask } from "@/types/card.types";
 import { isBefore, startOfDay } from "date-fns";
 import { useUsernameContext } from "@/context/usernameContext";
 
@@ -33,11 +33,13 @@ export default function TaskDialog({
   open,
   handleOpenChange,
   handleUpdateTaskSubmit,
+  boardId,
 }: {
   task: Task;
   open: boolean;
   handleOpenChange: (open: boolean) => void;
-  handleUpdateTaskSubmit: (updatedTask: Task) => void;
+  handleUpdateTaskSubmit: (updatedTask: UpdateTask) => void;
+  boardId: string;
 }) {
   const { username } = useUsernameContext();
   const [newTaskTitle, setNewTaskTitle] = useState<string>(task.title);
@@ -166,11 +168,13 @@ export default function TaskDialog({
                 type="submit"
                 onClick={() => {
                   handleUpdateTaskSubmit({
-                    ...task,
+                    id: task.id,
                     title: newTaskTitle,
-                    description: description,
-                    responsibility: responsibility,
-                    deadline: deadline,
+                    description: description || null,
+                    responsibility:
+                      responsibility === "none" ? null : responsibility,
+                    deadline: deadline ? deadline.toISOString() : null, // Datums-Objekt für DB konvertieren
+                    boardId: boardId,
                   });
                 }}
               >

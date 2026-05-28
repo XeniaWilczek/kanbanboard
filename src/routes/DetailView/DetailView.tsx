@@ -2,7 +2,7 @@ import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDetailReducer } from "@/hooks/useDetailReducer";
-import { getBoardById } from "@/lib/api";
+import { getBoardById, updateBoard } from "@/lib/api";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -22,16 +22,17 @@ export default function DetailView() {
     fetchBoard();
   }, []);
 
-  function handleSaveTitleClick() {
-    detailsDispatch({
-      type: "UPDATE_TITLE",
-      payload: { title: boardTitle },
-    });
+  function handleCancelTitleClick() {
     setEdit(false);
   }
 
-  function handleCancelTitleClick() {
-    setEdit(false);
+  async function handleSaveTitleClick() {
+    if (!board) return;
+    const updatedBoard = await updateBoard(board.id, { title: boardTitle });
+    if (updatedBoard) {
+      dispatchBoard({ type: "UPDATE_TITLE", payload: { title: boardTitle } });
+      setEdit(false);
+    }
   }
 
   function showEditField() {
@@ -63,10 +64,10 @@ export default function DetailView() {
     } else {
       return (
         <>
-          <h1 className="text-2xl font-bold">{board.title}</h1>
+          <h1 className="text-2xl font-bold">{board?.title ?? ""}</h1>
           <Button
             onClick={() => {
-              setBoardTitle(board.title);
+              setBoardTitle(board?.title ?? "");
               setEdit(true);
             }}
             variant="iconGhost"
@@ -94,6 +95,7 @@ export default function DetailView() {
       <div className="flex gap-4">
         <StatusCard
           title={"ToDo"}
+          boardId={board.id}
           tasks={board.tasks.filter(
             (t: { status: string }) => t.status === "ToDo",
           )}
@@ -101,6 +103,7 @@ export default function DetailView() {
         ></StatusCard>
         <StatusCard
           title={"InProgress"}
+          boardId={board.id}
           tasks={board.tasks.filter(
             (t: { status: string }) => t.status === "InProgress",
           )}
@@ -108,6 +111,7 @@ export default function DetailView() {
         ></StatusCard>
         <StatusCard
           title={"Done"}
+          boardId={board.id}
           tasks={board.tasks.filter(
             (t: { status: string }) => t.status === "Done",
           )}

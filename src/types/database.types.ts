@@ -34,33 +34,33 @@ export type Database = {
       }
       tasks: {
         Row: {
-          assignedTo: string | null
           boardId: string
-          column: string
           created_at: string
           deadline: string | null
           description: string | null
           id: string
+          responsibility: string | null
+          status: string
           title: string
         }
         Insert: {
-          assignedTo?: string | null
           boardId?: string
-          column: string
           created_at?: string
           deadline?: string | null
           description?: string | null
           id?: string
+          responsibility?: string | null
+          status: string
           title: string
         }
         Update: {
-          assignedTo?: string | null
           boardId?: string
-          column?: string
           created_at?: string
           deadline?: string | null
           description?: string | null
           id?: string
+          responsibility?: string | null
+          status?: string
           title?: string
         }
         Relationships: [

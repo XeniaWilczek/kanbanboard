@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
-import type { Task } from "@/types/card.types";
+import type { CreateTask, Task } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState, type Dispatch } from "react";
 import type { DetailAction } from "@/hooks/useDetailReducer";
@@ -39,15 +39,18 @@ import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
 import { useUsernameContext } from "@/context/usernameContext";
+import { insertTask } from "@/lib/api";
 
 export default function StatusCard({
   title,
   tasks,
   detailsDispatch,
+  boardId,
 }: {
   title: string;
   tasks: Task[];
   detailsDispatch: Dispatch<DetailAction>;
+  boardId: string;
 }) {
   const { username } = useUsernameContext();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -109,26 +112,37 @@ export default function StatusCard({
     });
   }
 
-  function handleCreateTaskClick() {
-    if (!newTaskTitle.trim()) return;
+  async function handleCreateTaskClick() {
+    if (!boardId || !newTaskTitle.trim()) return;
 
-    const taskCard: Task = {
-      id: String(Math.random()),
+    // Objekt ohne Id aufbauen
+    const taskToCreate: CreateTask = {
       title: newTaskTitle,
-      status: title as "ToDo" | "InProgress" | "Done",
       description: description,
+      status: title,
       responsibility: responsibility,
-      deadline: deadline,
+      deadline: deadline.toISOString(),
+      boardId: boardId,
     };
 
-    detailsDispatch({
-      type: "CREATE_TASK",
-      payload: { task: taskCard },
-    });
-    setNewTaskTitle("");
-    setDescription("");
-    setResponsibility(username || "none");
-    setDeadline(new Date());
+    try {
+      const insertedTask = await insertTask(taskToCreate as any);
+
+      if (insertedTask) {
+        detailsDispatch({
+          type: "CREATE_TASK",
+          payload: { task: insertedTask },
+        });
+
+        // Formular-States zurücksetzen
+        setNewTaskTitle("");
+        setDescription("");
+        setResponsibility(username || "none");
+        setDeadline(new Date());
+      }
+    } catch (error: unknown) {
+      console.error("Error creating task:", error);
+    }
   }
 
   function handleDeleteTaskClick(id: string) {
@@ -339,4 +353,7 @@ export default function StatusCard({
       ) : null}
     </>
   );
+}
+function dispatchBoard(arg0: { type: string; data: any }) {
+  throw new Error("Function not implemented.");
 }

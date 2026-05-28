@@ -1,5 +1,6 @@
-import { saveBoard } from "@/lib/api";
-import type { Board, Task } from "@/types/card.types";
+import type { Board } from "@/types/card.types";
+
+import type { Task } from "@/types/card.types";
 
 export type DetailState = Board | undefined;
 
@@ -18,67 +19,53 @@ export function useDetailReducer(
   state: DetailState,
   action: DetailAction,
 ): DetailState {
-  let newState = state;
+  if (!state && action.type !== "SET_BOARD") return state;
+
   switch (action.type) {
     case "SET_BOARD": {
-      newState= action.payload; 
-      break;
-      
+      return action.payload;
     }
 
     case "UPDATE_TITLE": {
-      if (!state) return state; 
-      return { ...state, title: action.payload.title };
+      return { ...state!, title: action.payload.title };
+    }
+
+    case "CREATE_TASK": {
+      return {
+        ...state!,
+        tasks: [...state!.tasks, action.payload.task],
+      };
+    }
+
+    case "DELETE_TASK": {
+      return {
+        ...state!,
+        tasks: state!.tasks.filter((t) => t.id !== action.payload.taskId),
+      };
+    }
+
+    case "UPDATE_TASK": {
+      const updatedTask = action.payload.task;
+      return {
+        ...state!,
+        tasks: state!.tasks.map((t) =>
+          t.id === updatedTask.id ? updatedTask : t,
+        ),
+      };
+    }
+
+    case "UPDATE_TASK_STATUS": {
+      const { taskId, newStatus } = action.payload;
+      return {
+        ...state!,
+        tasks: state!.tasks.map((t) =>
+          t.id === taskId ? { ...t, status: newStatus } : t,
+        ),
+      };
     }
 
     default: {
       return state;
     }
   }
-}
-
-    case "CREATE_TASK": {
-      newDetailState = {
-        ...state,
-        tasks: [...state.tasks, action.payload.task],
-      };
-      break;
-    }
-
-    case "DELETE_TASK": {
-      newDetailState = {
-        ...state,
-        tasks: state.tasks.filter((t) => t.id !== action.payload.taskId),
-      };
-      break;
-    }
-
-    case "UPDATE_TASK": {
-      const updatedTask = action.payload.task;
-      newDetailState = {
-        ...state,
-        tasks: state.tasks.map((t) =>
-          t.id === updatedTask.id ? updatedTask : t,
-        ),
-      };
-      break;
-    }
-    case "UPDATE_TASK_STATUS": {
-      const { taskId, newStatus } = action.payload;
-      newDetailState = {
-        ...state,
-        tasks: state.tasks.map((t) =>
-          t.id === taskId ? { ...t, status: newStatus } : t,
-        ),
-      };
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-
-  saveBoard(newDetailState);
-
-  return newDetailState;
 }
