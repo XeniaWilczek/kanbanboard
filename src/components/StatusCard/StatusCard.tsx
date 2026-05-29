@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Plus } from "lucide-react";
 import TaskCard from "../TaskCard/TaskCard";
-import type { CreateTask, Task } from "@/types/card.types";
+import type { CreateTask, Task, UpdateTask } from "@/types/card.types";
 import { Button } from "../ui/button";
 import { useState, type Dispatch } from "react";
 import type { DetailAction } from "@/hooks/useDetailReducer";
@@ -39,7 +39,7 @@ import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
 import { useUsernameContext } from "@/context/usernameContext";
-import { insertTask } from "@/lib/api";
+import { deleteTask, insertTask, updateTask } from "@/lib/api";
 
 export default function StatusCard({
   title,
@@ -89,7 +89,7 @@ export default function StatusCard({
     setIsDraggingOver(false);
   }
 
-  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setIsDraggingOver(false);
 
@@ -103,13 +103,10 @@ export default function StatusCard({
 
     if (taskStatus === title.toLowerCase()) return;
 
-    detailsDispatch({
-      type: "UPDATE_TASK_STATUS",
-      payload: {
-        taskId: taskId,
-        newStatus: title as "ToDo" | "InProgress" | "Done",
-      },
-    });
+    await handleUpdateTaskStatus(
+      taskId,
+      title as "ToDo" | "InProgress" | "Done",
+    );
   }
 
   async function handleCreateTaskClick() {
@@ -145,21 +142,53 @@ export default function StatusCard({
     }
   }
 
-  function handleDeleteTaskClick(id: string) {
-    detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
-  }
+  async function handleDeleteTaskClick(id: string) {
+    try {
+      await deleteTask(id);
 
+      detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
+    } catch (error: unknown) {
+      console.error("Error deleting tasks:", error);
+    }
+  }
   function handleEditTaskClick(task: Task) {
     setEditTask(task);
     setIsEditTaskOpen(true);
   }
-  function handleUpdateTaskSubmit(updatedTask: Task) {
-    detailsDispatch({
-      type: "UPDATE_TASK",
-      payload: { task: updatedTask },
-    });
+  async function handleUpdateTaskSubmit(task: UpdateTask) {
+    if (!editTask?.id) return;
+
+    try {
+      const updatedTask = await updateTask(editTask.id, task);
+
+      if (updatedTask) {
+        detailsDispatch({
+          type: "UPDATE_TASK",
+          payload: { task: updatedTask },
+        });
+      }
+    } catch (error: unknown) {
+      console.error("Error updating task:", error);
+    }
+
     setIsEditTaskOpen(false);
     setEditTask(undefined);
+  }
+
+  async function handleUpdateTaskStatus(
+    id: string,
+    newStatus: "ToDo" | "InProgress" | "Done",
+  ) {
+    try {
+      await updateTask(id, { status: newStatus });
+
+      detailsDispatch({
+        type: "UPDATE_TASK_STATUS",
+        payload: { taskId: id, newStatus: newStatus },
+      });
+    } catch (error: unknown) {
+      console.error("Error updating task status:", error);
+    }
   }
   return (
     <>
@@ -342,18 +371,16 @@ export default function StatusCard({
           )}
         </CardContent>
       </Card>
-      {editTask ? (
+      {editTask && (
         <TaskDialog
-          key={editTask.id ?? String(Math.random())}
+          key={editTask.id}
           task={editTask}
+          boardId={boardId ?? ""}
           open={isEditTaskOpen}
           handleOpenChange={setIsEditTaskOpen}
           handleUpdateTaskSubmit={handleUpdateTaskSubmit}
         />
-      ) : null}
+      )}
     </>
   );
-}
-function dispatchBoard(arg0: { type: string; data: any }) {
-  throw new Error("Function not implemented.");
 }
