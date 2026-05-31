@@ -28,9 +28,11 @@ export default function DetailView() {
 
   async function handleSaveTitleClick() {
     if (!board) return;
+
     const updatedBoard = await updateBoard(board.id, { title: boardTitle });
+
     if (updatedBoard) {
-      dispatchBoard({ type: "UPDATE_TITLE", payload: { title: boardTitle } });
+      dispatchBoard({ type: "SET_BOARD", payload: updatedBoard });
       setEdit(false);
     }
   }
