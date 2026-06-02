@@ -21,6 +21,8 @@ import type { Board } from "@/types/card.types";
 
 export default function BoardList() {
   const [boards, boardsDispatch] = useReducer(useBoardReducer, []);
+  //nicht im Reducer, da dieser nicht asynchron arbeiten kann
+  //Titel will man unabhängig vom Rest bearbeiten können
   const [newBoardTitle, setNewBoardTitle] = useState("");
 
   useEffect(() => {
