@@ -19,7 +19,7 @@ export async function getBoards(): Promise<Board[]> {
     return [];
   }
 
-  return boards;
+  return boards as unknown as Board[];
 }
 
 export async function insertBoard(board: Board): Promise<Board | null> {
@@ -37,7 +37,7 @@ export async function insertBoard(board: Board): Promise<Board | null> {
     return null;
   }
 
-  return data;
+  return data as unknown as Board | null;
 }
 
 export async function deleteBoard(id: string): Promise<void> {
