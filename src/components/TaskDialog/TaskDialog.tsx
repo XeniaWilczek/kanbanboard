@@ -173,7 +173,7 @@ export default function TaskDialog({
                     description: description || null,
                     responsibility:
                       responsibility === "none" ? null : responsibility,
-                    deadline: deadline ? deadline.toISOString() : null, // Datums-Objekt für DB konvertieren
+                    deadline: deadline ? deadline.toISOString() : null, // Datum-Objekt für Datenbank konvertieren
                     boardId: boardId,
                   });
                 }}
