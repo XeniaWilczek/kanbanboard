@@ -6,7 +6,6 @@ import type {
   UpdateTask,
 } from "@/types/card.types";
 import supabase from "./supabaseConnection";
-//Funktionen für Board-Liste
 
 //Funktionen für Supabase
 export async function getBoards(): Promise<Board[]> {
