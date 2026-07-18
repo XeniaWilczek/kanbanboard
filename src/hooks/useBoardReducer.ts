@@ -1,4 +1,4 @@
-import { saveBoards } from "@/lib/api";
+import { saveBoards } from "@/lib/localStorage";
 import type { Board } from "@/types/card.types";
 
 export type BoardAction =

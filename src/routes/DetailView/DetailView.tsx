@@ -2,7 +2,7 @@ import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDetailReducer } from "@/hooks/useDetailReducer";
-import { getBoard } from "@/lib/api";
+import { getBoard } from "@/lib/localStorage";
 import type { Board } from "@/types/card.types";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
 import { useReducer, useState } from "react";

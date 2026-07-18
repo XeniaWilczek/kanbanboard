@@ -28,7 +28,7 @@ export default function BoardCard({
                 variant="iconGhost"
                 size="icon"
                 onClick={(_e: React.MouseEvent<HTMLButtonElement>) => {
-                  // Verhindert, dass der Link zur Detailansicht ausgelöst wird
+                  // Verhindert, dass der Link zur Detailansicht beim Anklicken des Löschen-Buttons ausgelöst wird
                   _e.preventDefault();
                   _e.stopPropagation();
                   onDelete(board.id);

@@ -15,7 +15,7 @@ import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useReducer, useState } from "react";
-import { getBoards } from "@/lib/api";
+import { getBoards } from "@/lib/localStorage";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
 

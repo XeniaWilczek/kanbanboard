@@ -60,6 +60,7 @@ export default function StatusCard({
     : false;
   const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | undefined>();
+
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();
   }
