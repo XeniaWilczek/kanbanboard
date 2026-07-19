@@ -77,6 +77,8 @@ export async function updateBoard(
   }
   return data as Board;
 }
+
+//Funktionen für Tasks
 export async function insertTask(task: CreateTask): Promise<Task | null> {
   const { data, error } = await supabase
     .from("tasks")
