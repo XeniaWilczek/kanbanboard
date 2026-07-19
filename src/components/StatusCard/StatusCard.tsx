@@ -140,6 +140,7 @@ export default function StatusCard({
     setEditTask(task);
     setIsEditTaskOpen(true);
   }
+
   function handleUpdateTaskSubmit(updatedTask: Task) {
     detailsDispatch({
       type: "UPDATE_TASK",
