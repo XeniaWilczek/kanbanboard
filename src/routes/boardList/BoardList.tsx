@@ -18,23 +18,22 @@ import { useEffect, useReducer, useState } from "react";
 import { deleteBoard, getBoards, insertBoard } from "@/lib/api";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
-// NEU: Importiere den useUsernameContext, um an Token und userId zu kommen
 import { useUsernameContext } from "@/context/usernameContext";
 
 export default function BoardList() {
   const [boards, boardsDispatch] = useReducer(useBoardReducer, []);
   const [newBoardTitle, setNewBoardTitle] = useState("");
 
-  // NEU: Hole token und userId direkt aus dem Context
+  // token und userId aus dem usernameContext holen
   const { token, userId } = useUsernameContext();
 
-  // 1. Daten laden (getBoards benötigt jetzt das echte Token aus dem Context)
+  // 1. Daten laden
   useEffect(() => {
     async function loadData() {
-      // Wenn das Token noch im Hintergrund generiert wird, warten wir kurz
+      // token wird im Hintergrund generiert
       if (!token) return;
 
-      const fetchedBoards = await getBoards(token); // Echtes Token übergeben
+      const fetchedBoards = await getBoards(token);
       boardsDispatch({ type: "SET_BOARDS", payload: fetchedBoards });
     }
     loadData();
@@ -48,11 +47,11 @@ export default function BoardList() {
       id: "",
       title: newBoardTitle,
       created_at: new Date().toISOString(),
-      user_id: userId ?? "", // <-- Nutzt die echte, automatische UUID von Supabase
+      user_id: userId ?? "",
       tasks: [],
     } as Board;
 
-    // API-Funktion mit echtem Token und der echten userId aufrufen
+    // API-Funktion mit Token und der echten userId aufrufen
     const insertedBoard = await insertBoard(
       newBoard,
       token ?? "",
@@ -65,11 +64,11 @@ export default function BoardList() {
     }
   }
 
-  // 3. Board löschen (deleteBoard benötigt jetzt das echte Token)
+  // 3. Board löschen (deleteBoard benötigt Token)
   async function handleDeleteBoardClick(id: string) {
     try {
       if (!token) return;
-      await deleteBoard(id, token); // Echtes Token übergeben
+      await deleteBoard(id, token);
       boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
     } catch (error) {
       console.error("Error deleting board:", error);

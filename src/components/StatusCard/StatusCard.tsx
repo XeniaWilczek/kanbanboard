@@ -38,7 +38,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
-// Passe diese beiden Import-Pfade an, falls deine Ordnerstruktur anders liegt:
 import { useUsernameContext } from "@/context/usernameContext";
 import { deleteTask, insertTask, updateTask } from "@/lib/api";
 
@@ -53,7 +52,7 @@ export default function StatusCard({
   detailsDispatch: Dispatch<DetailAction>;
   boardId: string;
 }) {
-  // NEU: token und userId aus dem Context extrahieren
+  // token und userId aus dem usernameContext holen
   const { username, token, userId } = useUsernameContext();
 
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -114,7 +113,7 @@ export default function StatusCard({
     );
   }
 
-  // 1. Task erstellen (benötigt jetzt token und userId)
+  // 1. Task erstellen (benötigt token und userId)
   async function handleCreateTaskClick() {
     if (!boardId || !newTaskTitle.trim()) return;
 
@@ -125,11 +124,11 @@ export default function StatusCard({
       responsibility: responsibility,
       deadline: deadline.toISOString(),
       boardId: boardId,
-      user_id: userId ?? "", // <-- NEU: Für das RLS-Feld
+      user_id: userId ?? "",
     };
 
     try {
-      // NEU: token und userId übergeben
+      // token und userId übergeben
       const insertedTask = await insertTask(
         taskToCreate as any,
         token ?? "",
@@ -152,10 +151,10 @@ export default function StatusCard({
     }
   }
 
-  // 2. Task löschen (benötigt jetzt token)
+  // 2. Task löschen (benötigt token)
   async function handleDeleteTaskClick(id: string) {
     try {
-      await deleteTask(id, token ?? ""); // NEU: token übergeben
+      await deleteTask(id, token ?? "");
 
       detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
     } catch (error: unknown) {
@@ -168,12 +167,12 @@ export default function StatusCard({
     setIsEditTaskOpen(true);
   }
 
-  // 3. Task im Dialog editieren (benötigt jetzt token)
+  // 3. Task im Dialog bearbeiten (benötigt token)
   async function handleUpdateTaskSubmit(task: UpdateTask) {
     if (!editTask?.id) return;
 
     try {
-      const updatedTask = await updateTask(editTask.id, task, token ?? ""); // NEU: token übergeben
+      const updatedTask = await updateTask(editTask.id, task, token ?? "");
 
       if (updatedTask) {
         detailsDispatch({
@@ -189,13 +188,13 @@ export default function StatusCard({
     setEditTask(undefined);
   }
 
-  // 4. Task-Status via Drag & Drop updaten (benötigt jetzt token)
+  // 4. Task-Status via Drag & Drop updaten (benötigt token)
   async function handleUpdateTaskStatus(
     id: string,
     newStatus: "ToDo" | "InProgress" | "Done",
   ) {
     try {
-      await updateTask(id, { status: newStatus }, token ?? ""); // NEU: token übergeben
+      await updateTask(id, { status: newStatus }, token ?? "");
 
       detailsDispatch({
         type: "UPDATE_TASK_STATUS",

@@ -40,7 +40,7 @@ export async function insertBoard(
     .insert({
       title: board.title,
       created_at: board.created_at,
-      user_id: userId, // <-- Zwingend erforderlich für RLS!
+      user_id: userId,
     })
     .select("*, tasks(*)")
     .single();
@@ -117,7 +117,7 @@ export async function insertTask(
     .from("tasks")
     .insert({
       ...task,
-      user_id: userId, // <-- Zwingend erforderlich für RLS!
+      user_id: userId,
     })
     .select("*")
     .single();

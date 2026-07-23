@@ -1,13 +1,12 @@
 import StatusCard from "@/components/StatusCard/StatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUsernameContext } from "@/context/usernameContext";
 import { useDetailReducer } from "@/hooks/useDetailReducer";
 import { getBoardById, updateBoard } from "@/lib/api";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
-const getTokenFromMyAuth = () => "DEIN_ECHTES_JWT_TOKEN";
 
 export default function DetailView() {
   const { id } = useParams<{ id: string }>();
@@ -16,31 +15,34 @@ export default function DetailView() {
   const [edit, setEdit] = useState(false);
   const [boardTitle, setBoardTitle] = useState("");
 
-  // 1. Board laden (benötigt jetzt das Token)
+  const { token } = useUsernameContext();
+
+  // Board laden
   async function fetchBoard() {
-    const token = getTokenFromMyAuth(); // Token holen
-    const boardData = await getBoardById(id ?? "", token); // Token übergeben
+    if (!token) return;
+    const boardData = await getBoardById(id ?? "", token);
     dispatchBoard({ type: "SET_BOARD", payload: boardData });
   }
 
+  // token als Dependency hinzugefügt, damit geladen wird, sobald das Token bereitsteht
   useEffect(() => {
     fetchBoard();
-  }, [id]); // id als Dependency hinzugefügt für stabilere React-Struktur
+  }, [id, token]);
 
   function handleCancelTitleClick() {
     setEdit(false);
   }
 
-  // 2. Board-Titel aktualisieren (benötigt jetzt das Token)
+  // Board-Titel aktualisieren
   async function handleSaveTitleClick() {
-    if (!board) return;
+    if (!board || !token) return;
 
-    const token = getTokenFromMyAuth(); // Token holen
+    // Nutzt jetzt ebenfalls direkt das echte Token von oben
     const updatedBoard = await updateBoard(
       board.id,
       { title: boardTitle },
       token,
-    ); // Token übergeben
+    );
 
     if (updatedBoard) {
       dispatchBoard({ type: "SET_BOARD", payload: updatedBoard });

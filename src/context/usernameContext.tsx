@@ -5,7 +5,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-// Wir importieren den Standard-Supabase-Client
+
 import supabase from "@/lib/supabaseConnection";
 
 type UsernameContextType = {
@@ -28,18 +28,18 @@ export function UsernameProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("username") || "";
   });
 
-  // NEU: Zustände für Token und User-ID
+  // States für Token und User-ID
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     async function setupAnonymousAuth() {
-      // 1. Prüfen, ob der Nutzer bereits eine aktive anonyme Sitzung hat
+      // 1. Prüfen, ob der Nutzer bereits anonyme Sitzung hat
       let {
         data: { session },
       } = await supabase.auth.getSession();
 
-      // 2. Wenn nicht, loggen wir ihn anonym im Hintergrund ein
+      // 2. Wenn nicht, Nutzer einloggen
       if (!session) {
         const { data, error } = await supabase.auth.signInAnonymously();
         if (error) {
