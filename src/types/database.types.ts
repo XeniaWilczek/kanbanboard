@@ -19,16 +19,19 @@ export type Database = {
           created_at: string
           id: string
           title: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           title: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           title?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -42,6 +45,7 @@ export type Database = {
           responsibility: string | null
           status: string
           title: string
+          user_id: string | null
         }
         Insert: {
           boardId?: string
@@ -52,6 +56,7 @@ export type Database = {
           responsibility?: string | null
           status: string
           title: string
+          user_id?: string | null
         }
         Update: {
           boardId?: string
@@ -62,6 +67,7 @@ export type Database = {
           responsibility?: string | null
           status?: string
           title?: string
+          user_id?: string | null
         }
         Relationships: [
           {

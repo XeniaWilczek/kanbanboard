@@ -38,6 +38,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "../ui/textarea";
 import TaskDialog from "../TaskDialog/TaskDialog";
 import { isBefore, startOfDay } from "date-fns";
+// Passe diese beiden Import-Pfade an, falls deine Ordnerstruktur anders liegt:
 import { useUsernameContext } from "@/context/usernameContext";
 import { deleteTask, insertTask, updateTask } from "@/lib/api";
 
@@ -52,24 +53,28 @@ export default function StatusCard({
   detailsDispatch: Dispatch<DetailAction>;
   boardId: string;
 }) {
-  const { username } = useUsernameContext();
+  // NEU: token und userId aus dem Context extrahieren
+  const { username, token, userId } = useUsernameContext();
+
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [responsibility, setResponsibility] = useState(username || "none");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState(new Date());
+
   const hasPassed = deadline
     ? isBefore(startOfDay(deadline), startOfDay(new Date()))
     : false;
+
   const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | undefined>();
+
   function isTaskInTasks(status: string): boolean {
     return status.toLowerCase() === title.toLowerCase();
   }
 
   function handleDraggingOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-    //Es wird nach dem key gesucht, statt nach dem Value
     const statusType = e.dataTransfer.types.find((type) =>
       type.startsWith("status-"),
     );
@@ -109,10 +114,10 @@ export default function StatusCard({
     );
   }
 
+  // 1. Task erstellen (benötigt jetzt token und userId)
   async function handleCreateTaskClick() {
     if (!boardId || !newTaskTitle.trim()) return;
 
-    // Objekt ohne Id aufbauen
     const taskToCreate: CreateTask = {
       title: newTaskTitle,
       description: description,
@@ -120,10 +125,16 @@ export default function StatusCard({
       responsibility: responsibility,
       deadline: deadline.toISOString(),
       boardId: boardId,
+      user_id: userId ?? "", // <-- NEU: Für das RLS-Feld
     };
 
     try {
-      const insertedTask = await insertTask(taskToCreate as any);
+      // NEU: token und userId übergeben
+      const insertedTask = await insertTask(
+        taskToCreate as any,
+        token ?? "",
+        userId ?? "",
+      );
 
       if (insertedTask) {
         detailsDispatch({
@@ -131,7 +142,6 @@ export default function StatusCard({
           payload: { task: insertedTask },
         });
 
-        // Formular-States zurücksetzen
         setNewTaskTitle("");
         setDescription("");
         setResponsibility(username || "none");
@@ -142,24 +152,28 @@ export default function StatusCard({
     }
   }
 
+  // 2. Task löschen (benötigt jetzt token)
   async function handleDeleteTaskClick(id: string) {
     try {
-      await deleteTask(id);
+      await deleteTask(id, token ?? ""); // NEU: token übergeben
 
       detailsDispatch({ type: "DELETE_TASK", payload: { taskId: id } });
     } catch (error: unknown) {
       console.error("Error deleting tasks:", error);
     }
   }
+
   function handleEditTaskClick(task: Task) {
     setEditTask(task);
     setIsEditTaskOpen(true);
   }
+
+  // 3. Task im Dialog editieren (benötigt jetzt token)
   async function handleUpdateTaskSubmit(task: UpdateTask) {
     if (!editTask?.id) return;
 
     try {
-      const updatedTask = await updateTask(editTask.id, task);
+      const updatedTask = await updateTask(editTask.id, task, token ?? ""); // NEU: token übergeben
 
       if (updatedTask) {
         detailsDispatch({
@@ -175,12 +189,13 @@ export default function StatusCard({
     setEditTask(undefined);
   }
 
+  // 4. Task-Status via Drag & Drop updaten (benötigt jetzt token)
   async function handleUpdateTaskStatus(
     id: string,
     newStatus: "ToDo" | "InProgress" | "Done",
   ) {
     try {
-      await updateTask(id, { status: newStatus });
+      await updateTask(id, { status: newStatus }, token ?? ""); // NEU: token übergeben
 
       detailsDispatch({
         type: "UPDATE_TASK_STATUS",

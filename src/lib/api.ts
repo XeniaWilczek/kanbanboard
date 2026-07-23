@@ -5,10 +5,17 @@ import type {
   UpdateBoard,
   UpdateTask,
 } from "@/types/card.types";
-import supabase from "./supabaseConnection";
+// 1. Wir importieren jetzt getSupabase statt dem alten default-client
+import { getSupabase } from "./supabaseConnection";
 
-//Funktionen für Supabase
-export async function getBoards(): Promise<Board[]> {
+// ==========================================
+// FUNKTIONEN FÜR BOARDS
+// ==========================================
+
+export async function getBoards(token: string): Promise<Board[]> {
+  // Client mit dem Token des Nutzers erstellen
+  const supabase = getSupabase(token);
+
   const { data: boards, error } = await supabase
     .from("boards")
     .select("*, tasks(*)");
@@ -21,12 +28,19 @@ export async function getBoards(): Promise<Board[]> {
   return boards as unknown as Board[];
 }
 
-export async function insertBoard(board: Board): Promise<Board | null> {
+export async function insertBoard(
+  board: Board,
+  token: string,
+  userId: string,
+): Promise<Board | null> {
+  const supabase = getSupabase(token);
+
   const { data, error } = await supabase
     .from("boards")
     .insert({
       title: board.title,
       created_at: board.created_at,
+      user_id: userId, // <-- Zwingend erforderlich für RLS!
     })
     .select("*, tasks(*)")
     .single();
@@ -39,7 +53,9 @@ export async function insertBoard(board: Board): Promise<Board | null> {
   return data as unknown as Board | null;
 }
 
-export async function deleteBoard(id: string): Promise<void> {
+export async function deleteBoard(id: string, token: string): Promise<void> {
+  const supabase = getSupabase(token);
+
   const { error } = await supabase.from("boards").delete().eq("id", id);
   if (error) {
     console.error("Error deleting board:", error);
@@ -47,7 +63,12 @@ export async function deleteBoard(id: string): Promise<void> {
   }
 }
 
-export async function getBoardById(id: string): Promise<Board | undefined> {
+export async function getBoardById(
+  id: string,
+  token: string,
+): Promise<Board | undefined> {
+  const supabase = getSupabase(token);
+
   const { data: board, error } = await supabase
     .from("boards")
     .select("*, tasks(*)")
@@ -63,7 +84,10 @@ export async function getBoardById(id: string): Promise<Board | undefined> {
 export async function updateBoard(
   id: string,
   board: UpdateBoard,
+  token: string,
 ): Promise<Board | null> {
+  const supabase = getSupabase(token);
+
   const { data, error } = await supabase
     .from("boards")
     .update(board)
@@ -78,11 +102,23 @@ export async function updateBoard(
   return data as Board;
 }
 
-//Funktionen für Tasks
-export async function insertTask(task: CreateTask): Promise<Task | null> {
+// ==========================================
+// FUNKTIONEN FÜR TASKS
+// ==========================================
+
+export async function insertTask(
+  task: CreateTask,
+  token: string,
+  userId: string,
+): Promise<Task | null> {
+  const supabase = getSupabase(token);
+
   const { data, error } = await supabase
     .from("tasks")
-    .insert(task)
+    .insert({
+      ...task,
+      user_id: userId, // <-- Zwingend erforderlich für RLS!
+    })
     .select("*")
     .single();
 
@@ -97,7 +133,10 @@ export async function insertTask(task: CreateTask): Promise<Task | null> {
 export async function updateTask(
   id: string,
   task: UpdateTask,
+  token: string,
 ): Promise<Task | null> {
+  const supabase = getSupabase(token);
+
   const { data, error } = await supabase
     .from("tasks")
     .update(task)
@@ -112,7 +151,9 @@ export async function updateTask(
   return data as Task;
 }
 
-export async function deleteTask(id: string): Promise<void> {
+export async function deleteTask(id: string, token: string): Promise<void> {
+  const supabase = getSupabase(token);
+
   const { error } = await supabase.from("tasks").delete().eq("id", id);
   if (error) {
     console.error("Error deleting task:", error);

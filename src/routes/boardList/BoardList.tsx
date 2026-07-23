@@ -19,31 +19,41 @@ import { deleteBoard, getBoards, insertBoard } from "@/lib/api";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
 
+const getTokenFromMyAuth = () => "DEIN_ECHTES_JWT_TOKEN";
+const getUserIdFromMyAuth = () => "DEINE_ECHTE_USER_ID";
+
 export default function BoardList() {
   const [boards, boardsDispatch] = useReducer(useBoardReducer, []);
-  // nicht im Reducer, da dieser nicht asynchron arbeiten kann
-  // Titel will man unabhängig vom Rest bearbeiten können
   const [newBoardTitle, setNewBoardTitle] = useState("");
 
+  // 1. Daten laden (getBoards benötigt jetzt das Token)
   useEffect(() => {
     async function loadData() {
-      const fetchedBoards = await getBoards();
+      const token = getTokenFromMyAuth(); // Token holen
+
+      const fetchedBoards = await getBoards(token); // Token übergeben
       boardsDispatch({ type: "SET_BOARDS", payload: fetchedBoards });
     }
     loadData();
   }, []);
 
+  // 2. Board erstellen (insertBoard benötigt Token und eine user_id)
   async function handleCreateBoardClick() {
     if (newBoardTitle.trim().length === 0) return;
+
+    const token = getTokenFromMyAuth(); // Token holen
+    const userId = getUserIdFromMyAuth(); // User-ID holen
 
     const newBoard = {
       id: "",
       title: newBoardTitle,
       created_at: new Date().toISOString(),
+      user_id: userId, // <-- Wichtig: user_id muss im Objekt gesetzt sein
       tasks: [],
     } as Board;
 
-    const insertedBoard = await insertBoard(newBoard);
+    // Funktion mit zusätzlichem Token und der userId aufrufen
+    const insertedBoard = await insertBoard(newBoard, token, userId);
 
     if (insertedBoard) {
       boardsDispatch({ type: "CREATE_BOARD", payload: insertedBoard as Board });
@@ -51,9 +61,12 @@ export default function BoardList() {
     }
   }
 
+  // 3. Board löschen (deleteBoard benötigt jetzt das Token)
   async function handleDeleteBoardClick(id: string) {
     try {
-      await deleteBoard(id);
+      const token = getTokenFromMyAuth(); // Token holen
+
+      await deleteBoard(id, token); // Token übergeben
       boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
     } catch (error) {
       console.error("Error deleting board:", error);

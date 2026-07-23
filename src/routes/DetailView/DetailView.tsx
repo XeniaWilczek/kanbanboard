@@ -7,6 +7,8 @@ import { ArrowLeft, Check, Pencil, X } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+const getTokenFromMyAuth = () => "DEIN_ECHTES_JWT_TOKEN";
+
 export default function DetailView() {
   const { id } = useParams<{ id: string }>();
   const [board, dispatchBoard] = useReducer(useDetailReducer, undefined);
@@ -14,22 +16,31 @@ export default function DetailView() {
   const [edit, setEdit] = useState(false);
   const [boardTitle, setBoardTitle] = useState("");
 
+  // 1. Board laden (benötigt jetzt das Token)
   async function fetchBoard() {
-    const board = await getBoardById(id ?? "");
-    dispatchBoard({ type: "SET_BOARD", payload: board });
+    const token = getTokenFromMyAuth(); // Token holen
+    const boardData = await getBoardById(id ?? "", token); // Token übergeben
+    dispatchBoard({ type: "SET_BOARD", payload: boardData });
   }
+
   useEffect(() => {
     fetchBoard();
-  }, []);
+  }, [id]); // id als Dependency hinzugefügt für stabilere React-Struktur
 
   function handleCancelTitleClick() {
     setEdit(false);
   }
 
+  // 2. Board-Titel aktualisieren (benötigt jetzt das Token)
   async function handleSaveTitleClick() {
     if (!board) return;
 
-    const updatedBoard = await updateBoard(board.id, { title: boardTitle });
+    const token = getTokenFromMyAuth(); // Token holen
+    const updatedBoard = await updateBoard(
+      board.id,
+      { title: boardTitle },
+      token,
+    ); // Token übergeben
 
     if (updatedBoard) {
       dispatchBoard({ type: "SET_BOARD", payload: updatedBoard });
@@ -81,9 +92,11 @@ export default function DetailView() {
       );
     }
   }
+
   if (!board) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className="details w-[80vw] h-auto mx-auto p-6 flex flex-col gap-4">
       <div className="details-heading-and-buttons w-fit flex justify-start items-center gap-2">

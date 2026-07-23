@@ -1,8 +1,18 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+// Wir importieren den Standard-Supabase-Client
+import supabase from "../supabaseConnection";
 
 type UsernameContextType = {
   username: string;
   setUsername: (name: string) => void;
+  token: string | null; // NEU: Für getSupabase(token)
+  userId: string | null; // NEU: Für das Erstellen von Boards/Tasks
 };
 
 export const UsernameContext = createContext<UsernameContextType | null>(null);
@@ -18,8 +28,39 @@ export function UsernameProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("username") || "";
   });
 
+  // NEU: Zustände für Token und User-ID
+  const [token, setToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function setupAnonymousAuth() {
+      // 1. Prüfen, ob der Nutzer bereits eine aktive anonyme Sitzung hat
+      let {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      // 2. Wenn nicht, loggen wir ihn anonym im Hintergrund ein
+      if (!session) {
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error) {
+          console.error("Fehler beim anonymen Login:", error.message);
+          return;
+        }
+        session = data.session;
+      }
+
+      // 3. Token und User-ID im State speichern, damit die App sie nutzen kann
+      if (session) {
+        setToken(session.access_token);
+        setUserId(session.user.id);
+      }
+    }
+
+    setupAnonymousAuth();
+  }, []);
+
   return (
-    <UsernameContext.Provider value={{ username, setUsername }}>
+    <UsernameContext.Provider value={{ username, setUsername, token, userId }}>
       {children}
     </UsernameContext.Provider>
   );
