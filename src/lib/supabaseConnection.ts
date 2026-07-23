@@ -4,23 +4,26 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-// 1. Diese Funktion nutzt du überall dort, wo du eingeloggt Daten abfragen willst
-export const getSupabase = (token?: string) => {
-  if (!token) {
-    return createClient<Database>(supabaseUrl, supabaseKey);
-  }
-
-  return createClient<Database>(supabaseUrl, supabaseKey, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  });
+// 1. NEU: Wir packen den Standard-API-Key (VITE_SUPABASE_KEY) fest in das Objekt!
+const customHeaders: Record<string, string> = {
+  apikey: supabaseKey, // <-- Das repariert den "No API key found"-Fehler!
 };
 
-// 2. Ein Standard-Client für Orte, an denen KEIN Login benötigt wird (z.B. Landingpage)
-const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+// 2. Wir erstellen NUR EINEN EINZIGEN globalen Client
+const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+  global: {
+    headers: customHeaders,
+  },
+});
 
-// 3. Nur EIN default-export am Ende der Datei
+// 3. Diese Funktion aktualisiert NUR das Authorization-Token (den Ausweis des Nutzers)
+export const getSupabase = (token?: string) => {
+  if (token) {
+    customHeaders["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete customHeaders["Authorization"];
+  }
+  return supabase;
+};
+
 export default supabase;

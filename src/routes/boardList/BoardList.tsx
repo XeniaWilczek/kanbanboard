@@ -18,42 +18,46 @@ import { useEffect, useReducer, useState } from "react";
 import { deleteBoard, getBoards, insertBoard } from "@/lib/api";
 import { useBoardReducer } from "@/hooks/useBoardReducer";
 import type { Board } from "@/types/card.types";
-
-const getTokenFromMyAuth = () => "DEIN_ECHTES_JWT_TOKEN";
-const getUserIdFromMyAuth = () => "DEINE_ECHTE_USER_ID";
+// NEU: Importiere den useUsernameContext, um an Token und userId zu kommen
+import { useUsernameContext } from "@/context/usernameContext";
 
 export default function BoardList() {
   const [boards, boardsDispatch] = useReducer(useBoardReducer, []);
   const [newBoardTitle, setNewBoardTitle] = useState("");
 
-  // 1. Daten laden (getBoards benötigt jetzt das Token)
+  // NEU: Hole token und userId direkt aus dem Context
+  const { token, userId } = useUsernameContext();
+
+  // 1. Daten laden (getBoards benötigt jetzt das echte Token aus dem Context)
   useEffect(() => {
     async function loadData() {
-      const token = getTokenFromMyAuth(); // Token holen
+      // Wenn das Token noch im Hintergrund generiert wird, warten wir kurz
+      if (!token) return;
 
-      const fetchedBoards = await getBoards(token); // Token übergeben
+      const fetchedBoards = await getBoards(token); // Echtes Token übergeben
       boardsDispatch({ type: "SET_BOARDS", payload: fetchedBoards });
     }
     loadData();
-  }, []);
+  }, [token]); // Triggert automatisch neu, sobald das Token bereitsteht
 
-  // 2. Board erstellen (insertBoard benötigt Token und eine user_id)
+  // 2. Board erstellen (insertBoard benötigt Token und echte user_id)
   async function handleCreateBoardClick() {
     if (newBoardTitle.trim().length === 0) return;
-
-    const token = getTokenFromMyAuth(); // Token holen
-    const userId = getUserIdFromMyAuth(); // User-ID holen
 
     const newBoard = {
       id: "",
       title: newBoardTitle,
       created_at: new Date().toISOString(),
-      user_id: userId, // <-- Wichtig: user_id muss im Objekt gesetzt sein
+      user_id: userId ?? "", // <-- Nutzt die echte, automatische UUID von Supabase
       tasks: [],
     } as Board;
 
-    // Funktion mit zusätzlichem Token und der userId aufrufen
-    const insertedBoard = await insertBoard(newBoard, token, userId);
+    // API-Funktion mit echtem Token und der echten userId aufrufen
+    const insertedBoard = await insertBoard(
+      newBoard,
+      token ?? "",
+      userId ?? "",
+    );
 
     if (insertedBoard) {
       boardsDispatch({ type: "CREATE_BOARD", payload: insertedBoard as Board });
@@ -61,12 +65,11 @@ export default function BoardList() {
     }
   }
 
-  // 3. Board löschen (deleteBoard benötigt jetzt das Token)
+  // 3. Board löschen (deleteBoard benötigt jetzt das echte Token)
   async function handleDeleteBoardClick(id: string) {
     try {
-      const token = getTokenFromMyAuth(); // Token holen
-
-      await deleteBoard(id, token); // Token übergeben
+      if (!token) return;
+      await deleteBoard(id, token); // Echtes Token übergeben
       boardsDispatch({ type: "DELETE_BOARD", payload: { id } });
     } catch (error) {
       console.error("Error deleting board:", error);

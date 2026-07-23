@@ -6,13 +6,13 @@ import {
   type ReactNode,
 } from "react";
 // Wir importieren den Standard-Supabase-Client
-import supabase from "../supabaseConnection";
+import supabase from "@/lib/supabaseConnection";
 
 type UsernameContextType = {
   username: string;
   setUsername: (name: string) => void;
-  token: string | null; // NEU: Für getSupabase(token)
-  userId: string | null; // NEU: Für das Erstellen von Boards/Tasks
+  token: string | null;
+  userId: string | null;
 };
 
 export const UsernameContext = createContext<UsernameContextType | null>(null);
